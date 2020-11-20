@@ -22,7 +22,7 @@ deploy:
       tags: true
       jdk: openjdk11
 
-script: mvn --settings .travis/settings.xml clean  verify install sonar:sonar
+script: mvn --settings .travis/settings.xml clean  verify install
 # 
 # jobs:
 #   include:
