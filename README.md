@@ -2,6 +2,29 @@
 
 This library provides Java support to encode Data Decision Diagrams [1] and Hierarchical Set Decision Diagrams [2] as well as set and homomorphic operations.
 
+
+## How to integrate it in your project
+
+For Maven users
+
+```xml
+<dependency>
+  <groupId>net.hostettler.jdd</groupId>
+  <artifactId>jdd</artifactId>
+  <version>1.0-SNAPSHOT</version>
+</dependency>
+```
+
+for Gradle users
+
+```ruby
+dependencies {
+    implementation 'net.hostettler.jdd:jdd:1.0-SNAPSHOT'
+}
+```
+
+
+
 ## Data Decision Diagrams
 Creating a DDD goes as follow :
 
