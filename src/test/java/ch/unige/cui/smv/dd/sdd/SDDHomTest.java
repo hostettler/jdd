@@ -26,11 +26,10 @@ public class SDDHomTest {
 	@Before
 	public void setup() {
 		this.mRename = new SDDHomImpl<String, Integer>() {
-			
+
 			protected DD<String, ValSet<Integer>> phi(String param1String, ValSet<Integer> param1ValSet,
 					Map<ValSet<Integer>, DD<String, ValSet<Integer>>> param1Map, Object... param1VarArgs) {
-				return SDDImpl.create((String) param1VarArgs[0], (ValSet) param1ValSet,
-						 id(param1Map, param1ValSet));
+				return SDDImpl.create((String) param1VarArgs[0], (ValSet) param1ValSet, id(param1Map, param1ValSet));
 			}
 
 			protected DD<?, ?> phi1(Object... param1VarArgs) {
@@ -46,8 +45,8 @@ public class SDDHomTest {
 			}
 		};
 		this.mUp = new SDDHomImpl<String, Integer>() {
-			protected DD<String, ValSet<Integer>>  phi(String param1String, ValSet<Integer> param1ValSet,
-					Map<ValSet<Integer>, DD<String, ValSet<Integer>> > param1Map, Object... param1VarArgs) {
+			protected DD<String, ValSet<Integer>> phi(String param1String, ValSet<Integer> param1ValSet,
+					Map<ValSet<Integer>, DD<String, ValSet<Integer>>> param1Map, Object... param1VarArgs) {
 				String str = (String) param1VarArgs[0];
 				ValSet<Integer> valSet = (ValSet) param1VarArgs[1];
 				return SDDImpl.create(param1String, param1ValSet,
@@ -67,11 +66,11 @@ public class SDDHomTest {
 			}
 		};
 		this.mDown = new SDDHomImpl<String, Integer>() {
-			protected DD<String, ValSet<Integer>>  phi(String param1String, ValSet<Integer> param1ValSet,
-					Map<ValSet<Integer>, DD<String, ValSet<Integer>> > param1Map, Object... param1VarArgs) {
+			protected DD<String, ValSet<Integer>> phi(String param1String, ValSet<Integer> param1ValSet,
+					Map<ValSet<Integer>, DD<String, ValSet<Integer>>> param1Map, Object... param1VarArgs) {
 				String str = (String) param1VarArgs[0];
 				ValSet<Integer> valSet = (ValSet) param1VarArgs[1];
-				return  (param1String.equals(str)
+				return (param1String.equals(str)
 						? SDDImpl.create(param1String, param1ValSet,
 								SDDImpl.create(str, valSet, id(param1Map, param1ValSet)))
 						: SDDHomTest.this.mUp.phi(phi(id(param1Map, param1ValSet), new Object[] { str, valSet }),
@@ -91,8 +90,8 @@ public class SDDHomTest {
 			}
 		};
 		this.mSwap = new SDDHomImpl<String, Integer>() {
-			protected DD<String, ValSet<Integer>>  phi(String param1String, ValSet<Integer> param1ValSet,
-					Map<ValSet<Integer>,DD<String, ValSet<Integer>> > param1Map, Object... param1VarArgs) {
+			protected DD<String, ValSet<Integer>> phi(String param1String, ValSet<Integer> param1ValSet,
+					Map<ValSet<Integer>, DD<String, ValSet<Integer>>> param1Map, Object... param1VarArgs) {
 				String str1 = (String) param1VarArgs[0];
 				String str2 = (String) param1VarArgs[1];
 				return (param1String.equals(str1)
@@ -102,7 +101,7 @@ public class SDDHomTest {
 								? SDDHomTest.this.mRename.phi(SDDHomTest.this.mDown.phi(id(param1Map, param1ValSet),
 										new Object[] { str1, param1ValSet }), new Object[] { str2 })
 								: SDDImpl.create(param1String, param1ValSet,
-										  phi(id(param1Map, param1ValSet), param1VarArgs))));
+										phi(id(param1Map, param1ValSet), param1VarArgs))));
 			}
 
 			protected DD<?, ?> phi1(Object... param1VarArgs) {
@@ -121,8 +120,8 @@ public class SDDHomTest {
 
 	@Test
 	public void testSimpleHomomorphism() {
-		Hom<String, ValSet<Integer>>  sDDHomImpl = new SDDHomImpl<String, Integer>() {
-			
+		Hom<String, ValSet<Integer>> sDDHomImpl = new SDDHomImpl<String, Integer>() {
+
 			private ValSet<Integer> inc(ValSet<Integer> param1ValSet) {
 				HashSet<Integer> hashSet = new HashSet();
 				for (Integer integer : param1ValSet)
@@ -130,13 +129,11 @@ public class SDDHomTest {
 				return (ValSet<Integer>) ObjSet.create(hashSet);
 			}
 
-			public DD<String, ValSet<Integer>>  phi(String param1String, ValSet<Integer> param1ValSet,
-					Map<ValSet<Integer>, DD<String, ValSet<Integer>> > param1Map, Object... param1VarArgs) {
+			public DD<String, ValSet<Integer>> phi(String param1String, ValSet<Integer> param1ValSet,
+					Map<ValSet<Integer>, DD<String, ValSet<Integer>>> param1Map, Object... param1VarArgs) {
 				return param1String.equals(param1VarArgs[0])
-						? SDDImpl.create(param1String, inc(param1ValSet),
-								 id(param1Map, param1ValSet))
-						: SDDImpl.create(param1String, param1ValSet,
-								 phi(param1Map.get(param1ValSet), param1VarArgs));
+						? SDDImpl.create(param1String, inc(param1ValSet), id(param1Map, param1ValSet))
+						: SDDImpl.create(param1String, param1ValSet, phi(param1Map.get(param1ValSet), param1VarArgs));
 			}
 
 			protected DD<?, ?> phi1(Object... param1VarArgs) {
@@ -152,90 +149,90 @@ public class SDDHomTest {
 			}
 		};
 		DD<String, ValSet<Integer>> sDD1 = SDDImpl.create("a", ObjSet.create(Integer.valueOf(1)));
-		sDD1 =  sDD1.append( SDDImpl.create("b",ObjSet.create(Integer.valueOf(2))));
-		sDD1 =  sDD1.append( SDDImpl.create("a",  ObjSet.create(Integer.valueOf(3))));
-		DD<String, ValSet<Integer>> sDD2 = SDDImpl.create("a",ObjSet.create(Integer.valueOf(5)));
-		sDD2 =  sDD2.append( SDDImpl.create("d", ObjSet.create(Integer.valueOf(6))));
-		sDD2 = sDD2.append( SDDImpl.create("e",  ObjSet.create(Integer.valueOf(7))));
+		sDD1 = sDD1.append(SDDImpl.create("b", ObjSet.create(Integer.valueOf(2))));
+		sDD1 = sDD1.append(SDDImpl.create("a", ObjSet.create(Integer.valueOf(3))));
+		DD<String, ValSet<Integer>> sDD2 = SDDImpl.create("a", ObjSet.create(Integer.valueOf(5)));
+		sDD2 = sDD2.append(SDDImpl.create("d", ObjSet.create(Integer.valueOf(6))));
+		sDD2 = sDD2.append(SDDImpl.create("e", ObjSet.create(Integer.valueOf(7))));
 		SDDImpl.create("e", ObjSet.create(Integer.valueOf(7)));
-		sDD1 = sDD1.union( sDD2);
+		sDD1 = sDD1.union(sDD2);
 		System.out.println(sDD1);
-		sDD1 = sDDHomImpl.phi( sDD1, new Object[] { "a" });
+		sDD1 = sDDHomImpl.phi(sDD1, new Object[] { "a" });
 		System.out.println("Inc : " + sDD1);
-		DD<String, ValSet<Integer>>  sDD3 = SDDImpl.create("a", ObjSet.create(Integer.valueOf(2)));
-		sDD3 =  sDD3.append(SDDImpl.create("b",  ObjSet.create(Integer.valueOf(2))));
-		sDD3 =  sDD3.append( SDDImpl.create("a",  ObjSet.create(Integer.valueOf(3))));
-		DD<String, ValSet<Integer>> sDD4 = SDDImpl.create("a",  ObjSet.create(Integer.valueOf(6)));
-		sDD4 =sDD4.append( SDDImpl.create("d",  ObjSet.create(Integer.valueOf(6))));
-		sDD4 = sDD4.append( SDDImpl.create("e", ObjSet.create(Integer.valueOf(7))));
-		sDD3 =sDD3.union( sDD4);
+		DD<String, ValSet<Integer>> sDD3 = SDDImpl.create("a", ObjSet.create(Integer.valueOf(2)));
+		sDD3 = sDD3.append(SDDImpl.create("b", ObjSet.create(Integer.valueOf(2))));
+		sDD3 = sDD3.append(SDDImpl.create("a", ObjSet.create(Integer.valueOf(3))));
+		DD<String, ValSet<Integer>> sDD4 = SDDImpl.create("a", ObjSet.create(Integer.valueOf(6)));
+		sDD4 = sDD4.append(SDDImpl.create("d", ObjSet.create(Integer.valueOf(6))));
+		sDD4 = sDD4.append(SDDImpl.create("e", ObjSet.create(Integer.valueOf(7))));
+		sDD3 = sDD3.union(sDD4);
 		SDDImpl.create("b", ObjSet.create(Integer.valueOf(2)));
 		Assert.assertSame(sDD1, sDD3);
 	}
 
 	@Test
 	public void testRenameHomomorphism() {
-		DD<String, ValSet<Integer>>  sDD1 = SDDImpl.create("a",  ObjSet.create(Integer.valueOf(1)));
-		sDD1 =  sDD1.append( SDDImpl.create("b", ObjSet.create(Integer.valueOf(2))));
-		sDD1 =  sDD1.append( SDDImpl.create("c", ObjSet.create(Integer.valueOf(3))));
-		sDD1 =  sDD1.append( SDDImpl.create("d", ObjSet.create(Integer.valueOf(4))));
+		DD<String, ValSet<Integer>> sDD1 = SDDImpl.create("a", ObjSet.create(Integer.valueOf(1)));
+		sDD1 = sDD1.append(SDDImpl.create("b", ObjSet.create(Integer.valueOf(2))));
+		sDD1 = sDD1.append(SDDImpl.create("c", ObjSet.create(Integer.valueOf(3))));
+		sDD1 = sDD1.append(SDDImpl.create("d", ObjSet.create(Integer.valueOf(4))));
 		System.out.println("d : " + sDD1);
-		sDD1 = this.mRename.phi( sDD1, new Object[] { "c" });
+		sDD1 = this.mRename.phi(sDD1, new Object[] { "c" });
 		System.out.println("rename(d, c) " + sDD1);
 		DD<String, ValSet<Integer>> sDD2 = SDDImpl.create("c", ObjSet.create(Integer.valueOf(1)));
-		sDD2 =  sDD2.append( SDDImpl.create("b",  ObjSet.create(Integer.valueOf(2))));
-		sDD2 =  sDD2.append( SDDImpl.create("c", ObjSet.create(Integer.valueOf(3))));
-		sDD2 =  sDD2.append( SDDImpl.create("d",  ObjSet.create(Integer.valueOf(4))));
+		sDD2 = sDD2.append(SDDImpl.create("b", ObjSet.create(Integer.valueOf(2))));
+		sDD2 = sDD2.append(SDDImpl.create("c", ObjSet.create(Integer.valueOf(3))));
+		sDD2 = sDD2.append(SDDImpl.create("d", ObjSet.create(Integer.valueOf(4))));
 		Assert.assertSame(sDD2, sDD1);
 	}
 
 	@Test
 	public void testUpHomomorphism() {
-		DD<String, ValSet<Integer>>  sDD1 = SDDImpl.create("a",  ObjSet.create(Integer.valueOf(1)));
-		sDD1 = sDD1.append( SDDImpl.create("b", ObjSet.create(Integer.valueOf(2))));
-		sDD1 =sDD1.append( SDDImpl.create("c", ObjSet.create(Integer.valueOf(3))));
-		sDD1 =sDD1.append( SDDImpl.create("d", ObjSet.create(Integer.valueOf(4))));
+		DD<String, ValSet<Integer>> sDD1 = SDDImpl.create("a", ObjSet.create(Integer.valueOf(1)));
+		sDD1 = sDD1.append(SDDImpl.create("b", ObjSet.create(Integer.valueOf(2))));
+		sDD1 = sDD1.append(SDDImpl.create("c", ObjSet.create(Integer.valueOf(3))));
+		sDD1 = sDD1.append(SDDImpl.create("d", ObjSet.create(Integer.valueOf(4))));
 		System.out.println("d : " + sDD1);
-		sDD1 = this.mUp.phi( sDD1, new Object[] { "c", ObjSet.create(Integer.valueOf(3)) });
+		sDD1 = this.mUp.phi(sDD1, new Object[] { "c", ObjSet.create(Integer.valueOf(3)) });
 		System.out.println("up(d, c, {3}) " + sDD1);
-		DD<String, ValSet<Integer>>  sDD2 = SDDImpl.create("a",  ObjSet.create(Integer.valueOf(1)));
-		sDD2 = sDD2.append( SDDImpl.create("c", ObjSet.create(Integer.valueOf(3))));
-		sDD2 = sDD2.append( SDDImpl.create("b",  ObjSet.create(Integer.valueOf(2))));
-		sDD2 =  sDD2.append( SDDImpl.create("c", ObjSet.create(Integer.valueOf(3))));
-		sDD2 = sDD2.append( SDDImpl.create("d", ObjSet.create(Integer.valueOf(4))));
+		DD<String, ValSet<Integer>> sDD2 = SDDImpl.create("a", ObjSet.create(Integer.valueOf(1)));
+		sDD2 = sDD2.append(SDDImpl.create("c", ObjSet.create(Integer.valueOf(3))));
+		sDD2 = sDD2.append(SDDImpl.create("b", ObjSet.create(Integer.valueOf(2))));
+		sDD2 = sDD2.append(SDDImpl.create("c", ObjSet.create(Integer.valueOf(3))));
+		sDD2 = sDD2.append(SDDImpl.create("d", ObjSet.create(Integer.valueOf(4))));
 		Assert.assertSame(sDD2, sDD1);
 	}
 
 	@Test
 	public void testDownHomomorphism() {
 		DD<String, ValSet<Integer>> sDD1 = SDDImpl.create("a", ObjSet.create(Integer.valueOf(1)));
-		sDD1 =sDD1.append( SDDImpl.create("b", ObjSet.create(Integer.valueOf(2))));
-		sDD1 =sDD1.append( SDDImpl.create("c", ObjSet.create(Integer.valueOf(3))));
-		sDD1 =sDD1.append( SDDImpl.create("d", ObjSet.create(Integer.valueOf(4))));
+		sDD1 = sDD1.append(SDDImpl.create("b", ObjSet.create(Integer.valueOf(2))));
+		sDD1 = sDD1.append(SDDImpl.create("c", ObjSet.create(Integer.valueOf(3))));
+		sDD1 = sDD1.append(SDDImpl.create("d", ObjSet.create(Integer.valueOf(4))));
 		System.out.println("d : " + sDD1);
-		sDD1 = this.mDown.phi( sDD1, new Object[] { "c", ObjSet.create(Integer.valueOf(8)) });
+		sDD1 = this.mDown.phi(sDD1, new Object[] { "c", ObjSet.create(Integer.valueOf(8)) });
 		System.out.println("down(d, c, {8}) " + sDD1);
 		DD<String, ValSet<Integer>> sDD2 = SDDImpl.create("c", ObjSet.create(Integer.valueOf(3)));
-		sDD2 =sDD2.append( SDDImpl.create("a", ObjSet.create(Integer.valueOf(1))));
-		sDD2 =sDD2.append( SDDImpl.create("b", ObjSet.create(Integer.valueOf(2))));
-		sDD2 =sDD2.append( SDDImpl.create("c", ObjSet.create(Integer.valueOf(8))));
-		sDD2 =sDD2.append( SDDImpl.create("d", ObjSet.create(Integer.valueOf(4))));
+		sDD2 = sDD2.append(SDDImpl.create("a", ObjSet.create(Integer.valueOf(1))));
+		sDD2 = sDD2.append(SDDImpl.create("b", ObjSet.create(Integer.valueOf(2))));
+		sDD2 = sDD2.append(SDDImpl.create("c", ObjSet.create(Integer.valueOf(8))));
+		sDD2 = sDD2.append(SDDImpl.create("d", ObjSet.create(Integer.valueOf(4))));
 		Assert.assertSame(sDD2, sDD1);
 	}
 
 	@Test
 	public void testSwapHomomorphism() {
 		DD<String, ValSet<Integer>> sDD1 = SDDImpl.create("a", ObjSet.create(Integer.valueOf(1)));
-		sDD1 =sDD1.append( SDDImpl.create("b", ObjSet.create(Integer.valueOf(2))));
-		sDD1 =sDD1.append( SDDImpl.create("c", ObjSet.create(Integer.valueOf(3))));
-		sDD1 =sDD1.append( SDDImpl.create("d", ObjSet.create(Integer.valueOf(4))));
+		sDD1 = sDD1.append(SDDImpl.create("b", ObjSet.create(Integer.valueOf(2))));
+		sDD1 = sDD1.append(SDDImpl.create("c", ObjSet.create(Integer.valueOf(3))));
+		sDD1 = sDD1.append(SDDImpl.create("d", ObjSet.create(Integer.valueOf(4))));
 		System.out.println("d : " + sDD1);
-		sDD1 = this.mSwap.phi( sDD1, new Object[] { "b", "d" });
+		sDD1 = this.mSwap.phi(sDD1, new Object[] { "b", "d" });
 		System.out.println("swap(d, 'b', 'd') " + sDD1);
 		DD<String, ValSet<Integer>> sDD2 = SDDImpl.create("a", ObjSet.create(Integer.valueOf(1)));
-		sDD2 =sDD2.append( SDDImpl.create("b", ObjSet.create(Integer.valueOf(4))));
-		sDD2 =sDD2.append( SDDImpl.create("c", ObjSet.create(Integer.valueOf(3))));
-		sDD2 =sDD2.append( SDDImpl.create("d", ObjSet.create(Integer.valueOf(2))));
+		sDD2 = sDD2.append(SDDImpl.create("b", ObjSet.create(Integer.valueOf(4))));
+		sDD2 = sDD2.append(SDDImpl.create("c", ObjSet.create(Integer.valueOf(3))));
+		sDD2 = sDD2.append(SDDImpl.create("d", ObjSet.create(Integer.valueOf(2))));
 		Assert.assertSame(sDD2, sDD1);
 	}
 
@@ -265,9 +262,8 @@ public class SDDHomTest {
 		SDDHomImpl<String, Integer> sDDHomImpl2 = new SDDHomImpl<String, Integer>() {
 			protected DD<String, ValSet<Integer>> phi(String param1String, ValSet<Integer> param1ValSet,
 					Map<ValSet<Integer>, DD<String, ValSet<Integer>>> param1Map, Object... param1VarArgs) {
-				return SDDImpl.create(param1String, param1ValSet,
-						SDDImpl.create("H",  ObjSet.create(Integer.valueOf(2)),
-								phi(id(param1Map, param1ValSet), new Object[0])));
+				return SDDImpl.create(param1String, param1ValSet, SDDImpl.create("H", ObjSet.create(Integer.valueOf(2)),
+						phi(id(param1Map, param1ValSet), new Object[0])));
 			}
 
 			protected DD<?, ?> phi1(Object... param1VarArgs) {
@@ -286,13 +282,12 @@ public class SDDHomTest {
 		System.out.println(object);
 		Assert.assertEquals(
 				SDDImpl.create("b", ObjSet.create(Integer.valueOf(8)), SDDImpl.create("H",
-						 ObjSet.create(Integer.valueOf(2)),
+						ObjSet.create(Integer.valueOf(2)),
 						SDDImpl.create("H", ObjSet.create(Integer.valueOf(1)),
-								SDDImpl.create("H",  ObjSet.create(Integer.valueOf(2)),
+								SDDImpl.create("H", ObjSet.create(Integer.valueOf(2)),
 										SDDImpl.create("T", ObjSet.create(Integer.valueOf(1)),
-												SDDImpl.create("H",  ObjSet.create(Integer.valueOf(2)),
-														SDDImpl.create("T",
-																ObjSet.create(Integer.valueOf(2))))))))),
+												SDDImpl.create("H", ObjSet.create(Integer.valueOf(2)),
+														SDDImpl.create("T", ObjSet.create(Integer.valueOf(2))))))))),
 				object);
 	}
 
@@ -309,30 +304,30 @@ public class SDDHomTest {
 		System.out.println("****** Reloc ********");
 		SDDRelocationHom<String, Integer> sDDRelocationHom = new SDDRelocationHom<String, Integer>("d");
 		DD<String, ValSet<Integer>> sDD1 = SDDImpl.create("a", ObjSet.create(Integer.valueOf(1)));
-		sDD1 =sDD1.append( SDDImpl.create("b", ObjSet.create(Integer.valueOf(2))));
-		sDD1 =sDD1.append( SDDImpl.create("c", ObjSet.create(Integer.valueOf(3))));
-		sDD1 =sDD1.append( SDDImpl.create("d", ObjSet.create(Integer.valueOf(3))));
-		sDD1 =sDD1.append( SDDImpl.create("e", ObjSet.create(Integer.valueOf(3))));
+		sDD1 = sDD1.append(SDDImpl.create("b", ObjSet.create(Integer.valueOf(2))));
+		sDD1 = sDD1.append(SDDImpl.create("c", ObjSet.create(Integer.valueOf(3))));
+		sDD1 = sDD1.append(SDDImpl.create("d", ObjSet.create(Integer.valueOf(3))));
+		sDD1 = sDD1.append(SDDImpl.create("e", ObjSet.create(Integer.valueOf(3))));
 		DD<String, ValSet<Integer>> sDD2 = SDDImpl.create("a", ObjSet.create(Integer.valueOf(5)));
-		sDD2 =sDD2.append( SDDImpl.create("b", ObjSet.create(Integer.valueOf(6))));
-		sDD2 =sDD2.append( SDDImpl.create("c", ObjSet.create(Integer.valueOf(7))));
-		sDD2 =sDD2.append( SDDImpl.create("d", ObjSet.create(Integer.valueOf(3))));
-		sDD2 =sDD2.append( SDDImpl.create("e", ObjSet.create(Integer.valueOf(3))));
-		sDD1 =sDD1.union( sDD2);
+		sDD2 = sDD2.append(SDDImpl.create("b", ObjSet.create(Integer.valueOf(6))));
+		sDD2 = sDD2.append(SDDImpl.create("c", ObjSet.create(Integer.valueOf(7))));
+		sDD2 = sDD2.append(SDDImpl.create("d", ObjSet.create(Integer.valueOf(3))));
+		sDD2 = sDD2.append(SDDImpl.create("e", ObjSet.create(Integer.valueOf(3))));
+		sDD1 = sDD1.union(sDD2);
 		System.out.println(sDD1);
-		Object object = sDDRelocationHom.phi( sDD1, new Object[0]);
+		Object object = sDDRelocationHom.phi(sDD1, new Object[0]);
 		System.out.println("Reloc : " + object);
 		DD<String, ValSet<Integer>> sDD3 = SDDImpl.create("d", ObjSet.create(Integer.valueOf(3)));
-		sDD3 =sDD3.append( SDDImpl.create("a", ObjSet.create(Integer.valueOf(1))));
-		sDD3 =sDD3.append( SDDImpl.create("b", ObjSet.create(Integer.valueOf(2))));
-		sDD3 =sDD3.append( SDDImpl.create("c", ObjSet.create(Integer.valueOf(3))));
-		sDD3 =sDD3.append( SDDImpl.create("e", ObjSet.create(Integer.valueOf(3))));
+		sDD3 = sDD3.append(SDDImpl.create("a", ObjSet.create(Integer.valueOf(1))));
+		sDD3 = sDD3.append(SDDImpl.create("b", ObjSet.create(Integer.valueOf(2))));
+		sDD3 = sDD3.append(SDDImpl.create("c", ObjSet.create(Integer.valueOf(3))));
+		sDD3 = sDD3.append(SDDImpl.create("e", ObjSet.create(Integer.valueOf(3))));
 		DD<String, ValSet<Integer>> sDD4 = SDDImpl.create("d", ObjSet.create(Integer.valueOf(3)));
-		sDD4 =sDD4.append( SDDImpl.create("a", ObjSet.create(Integer.valueOf(5))));
-		sDD4 =sDD4.append( SDDImpl.create("b", ObjSet.create(Integer.valueOf(6))));
-		sDD4 =sDD4.append( SDDImpl.create("c", ObjSet.create(Integer.valueOf(7))));
-		sDD4 =sDD4.append( SDDImpl.create("e", ObjSet.create(Integer.valueOf(3))));
-		sDD3 =sDD3.union( sDD4);
+		sDD4 = sDD4.append(SDDImpl.create("a", ObjSet.create(Integer.valueOf(5))));
+		sDD4 = sDD4.append(SDDImpl.create("b", ObjSet.create(Integer.valueOf(6))));
+		sDD4 = sDD4.append(SDDImpl.create("c", ObjSet.create(Integer.valueOf(7))));
+		sDD4 = sDD4.append(SDDImpl.create("e", ObjSet.create(Integer.valueOf(3))));
+		sDD3 = sDD3.union(sDD4);
 		Assert.assertSame(object, sDD3);
 	}
 
@@ -347,22 +342,21 @@ public class SDDHomTest {
 	@Test
 	public void testUp() {
 		System.out.println("****** Up ********");
-		SDDUp<String, Integer> sDDUp = new SDDUp<String, Integer>("d",
-				 ObjSet.create(Integer.valueOf(10)));
+		SDDUp<String, Integer> sDDUp = new SDDUp<String, Integer>("d", ObjSet.create(Integer.valueOf(10)));
 		DD<String, ValSet<Integer>> sDD1 = SDDImpl.create("a", ObjSet.create(Integer.valueOf(1)));
-		sDD1 =sDD1.append( SDDImpl.create("b", ObjSet.create(Integer.valueOf(2))));
-		sDD1 =sDD1.append( SDDImpl.create("c", ObjSet.create(Integer.valueOf(3))));
-		sDD1 =sDD1.append( SDDImpl.create("d", ObjSet.create(Integer.valueOf(3))));
-		sDD1 =sDD1.append( SDDImpl.create("e", ObjSet.create(Integer.valueOf(3))));
+		sDD1 = sDD1.append(SDDImpl.create("b", ObjSet.create(Integer.valueOf(2))));
+		sDD1 = sDD1.append(SDDImpl.create("c", ObjSet.create(Integer.valueOf(3))));
+		sDD1 = sDD1.append(SDDImpl.create("d", ObjSet.create(Integer.valueOf(3))));
+		sDD1 = sDD1.append(SDDImpl.create("e", ObjSet.create(Integer.valueOf(3))));
 		System.out.println(sDD1);
-		Object object = sDDUp.phi( sDD1, new Object[0]);
+		Object object = sDDUp.phi(sDD1, new Object[0]);
 		System.out.println("Up : " + object);
 		DD<String, ValSet<Integer>> sDD2 = SDDImpl.create("a", ObjSet.create(Integer.valueOf(1)));
-		sDD2 = sDD2.append( SDDImpl.create("d", ObjSet.create(Integer.valueOf(10))));
-		sDD2 =sDD2.append( SDDImpl.create("b", ObjSet.create(Integer.valueOf(2))));
-		sDD2 =sDD2.append( SDDImpl.create("c", ObjSet.create(Integer.valueOf(3))));
-		sDD2 =sDD2.append( SDDImpl.create("d", ObjSet.create(Integer.valueOf(3))));
-		sDD2 =sDD2.append( SDDImpl.create("e", ObjSet.create(Integer.valueOf(3))));
+		sDD2 = sDD2.append(SDDImpl.create("d", ObjSet.create(Integer.valueOf(10))));
+		sDD2 = sDD2.append(SDDImpl.create("b", ObjSet.create(Integer.valueOf(2))));
+		sDD2 = sDD2.append(SDDImpl.create("c", ObjSet.create(Integer.valueOf(3))));
+		sDD2 = sDD2.append(SDDImpl.create("d", ObjSet.create(Integer.valueOf(3))));
+		sDD2 = sDD2.append(SDDImpl.create("e", ObjSet.create(Integer.valueOf(3))));
 		Assert.assertSame(object, sDD2);
 	}
 
@@ -379,11 +373,11 @@ public class SDDHomTest {
 		System.out.println("****** Id ********");
 		SDDIdHom<String, Integer> sDDIdHom = new SDDIdHom<String, Integer>();
 		DD<String, ValSet<Integer>> sDD = SDDImpl.create("a", ObjSet.create(Integer.valueOf(1)));
-		sDD =sDD.append( SDDImpl.create("b", ObjSet.create(Integer.valueOf(2))));
-		sDD =sDD.append( SDDImpl.create("c", ObjSet.create(Integer.valueOf(3))));
-		sDD =sDD.append( SDDImpl.create("d", ObjSet.create(Integer.valueOf(3))));
-		sDD =sDD.append( SDDImpl.create("e", ObjSet.create(Integer.valueOf(3))));
-		Assert.assertSame(sDDIdHom.phi( sDD, new Object[0]), sDD);
+		sDD = sDD.append(SDDImpl.create("b", ObjSet.create(Integer.valueOf(2))));
+		sDD = sDD.append(SDDImpl.create("c", ObjSet.create(Integer.valueOf(3))));
+		sDD = sDD.append(SDDImpl.create("d", ObjSet.create(Integer.valueOf(3))));
+		sDD = sDD.append(SDDImpl.create("e", ObjSet.create(Integer.valueOf(3))));
+		Assert.assertSame(sDDIdHom.phi(sDD, new Object[0]), sDD);
 		Assert.assertEquals(new SDDIdHom<Object, Object>(), new SDDIdHom<Object, Object>());
 	}
 
@@ -392,20 +386,39 @@ public class SDDHomTest {
 		System.out.println("****** Local ********");
 		SDDLocalHom<String, Integer, String, Integer> sDDLocalHom = new SDDLocalHom<String, Integer, String, Integer>(
 				new DDDUp("a", Integer.valueOf(1)), "a");
-		DD<String, ValSet<Integer>> sDD1 = SDDImpl.create("a",  DDDImpl.create("b", Integer.valueOf(1)));
-		sDD1 =sDD1.append( SDDImpl.create("b", ObjSet.create(Integer.valueOf(2))));
-		sDD1 =sDD1.append( SDDImpl.create("c", ObjSet.create(Integer.valueOf(3))));
-		sDD1 =sDD1.append( SDDImpl.create("d", ObjSet.create(Integer.valueOf(3))));
-		sDD1 =sDD1.append( SDDImpl.create("e", ObjSet.create(Integer.valueOf(3))));
+		DD<String, ValSet<Integer>> sDD1 = SDDImpl.create("a", DDDImpl.create("b", Integer.valueOf(1)));
+		sDD1 = sDD1.append(SDDImpl.create("b", ObjSet.create(Integer.valueOf(2))));
+		sDD1 = sDD1.append(SDDImpl.create("c", ObjSet.create(Integer.valueOf(3))));
+		sDD1 = sDD1.append(SDDImpl.create("d", ObjSet.create(Integer.valueOf(3))));
+		sDD1 = sDD1.append(SDDImpl.create("e", ObjSet.create(Integer.valueOf(3))));
 		DD<String, ValSet<Integer>> sDD2 = SDDImpl.create("a",
-				 DDDImpl.create("b", Integer.valueOf(1), DDDImpl.create("a", Integer.valueOf(1))));
-		sDD2 =sDD2.append( SDDImpl.create("b", ObjSet.create(Integer.valueOf(2))));
-		sDD2 =sDD2.append( SDDImpl.create("c", ObjSet.create(Integer.valueOf(3))));
-		sDD2 =sDD2.append( SDDImpl.create("d", ObjSet.create(Integer.valueOf(3))));
-		sDD2 =sDD2.append( SDDImpl.create("e", ObjSet.create(Integer.valueOf(3))));
-		Assert.assertSame(sDD2, sDDLocalHom.phi( sDD1, new Object[0]));
+				DDDImpl.create("b", Integer.valueOf(1), DDDImpl.create("a", Integer.valueOf(1))));
+		sDD2 = sDD2.append(SDDImpl.create("b", ObjSet.create(Integer.valueOf(2))));
+		sDD2 = sDD2.append(SDDImpl.create("c", ObjSet.create(Integer.valueOf(3))));
+		sDD2 = sDD2.append(SDDImpl.create("d", ObjSet.create(Integer.valueOf(3))));
+		sDD2 = sDD2.append(SDDImpl.create("e", ObjSet.create(Integer.valueOf(3))));
+		Assert.assertSame(sDD2, sDDLocalHom.phi(sDD1, new Object[0]));
 		Assert.assertEquals(new SDDLocalHom<String, Object, Object, Object>(new DDDUp("a", Integer.valueOf(1)), "a"),
 				new SDDLocalHom<String, Object, Object, Object>(new DDDUp("a", Integer.valueOf(1)), "a"));
 	}
-}
 
+	@Test
+	public void testMyFilterHom() {
+		DD<String, ValSet<Integer>> sDD1 = SDDImpl.create("a",  ObjSet.create(1,2,3), SDDImpl.create("b",  ObjSet.create(4,2,3)));
+
+
+		Hom<String, ValSet<Integer>> filter = new SimplePropagationSDDHomImpl<String, Integer>() {
+
+				@Override
+				protected DD<String, ValSet<Integer>> phi(String var, ValSet<Integer> values,
+						Map<ValSet<Integer>, DD<String, ValSet<Integer>>> alpha, Object... parameters) {
+					String str = (String) parameters[0];
+					ValSet<Integer> valuesToFilterOut = (ValSet<Integer> ) parameters[1];
+					
+					return DDDImpl.create(var, values.difference(valuesToFilterOut), phi(id(alpha, values), parameters));	
+				}
+		};
+				
+		System.out.println(filter.phi(sDD1, new Object[] { "c", ObjSet.create(2,3) }));
+	}
+}

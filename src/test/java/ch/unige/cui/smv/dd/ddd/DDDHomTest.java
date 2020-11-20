@@ -40,12 +40,12 @@ public class DDDHomTest {
 			}
 		};
 		this.mUp = new DDDHomImpl<String, Integer>() {
-			protected DD<String, Integer> phi(String param1String, Integer param1Integer,
-					Map<Integer, DD<String, Integer>> param1Map, Object... param1VarArgs) {
-				String str = (String) param1VarArgs[0];
-				Integer integer = (Integer) param1VarArgs[1];
-				return DDDImpl.create(param1String, param1Integer,
-						DDDImpl.create(str, integer, id(param1Map, param1Integer)));
+			protected DD<String, Integer> phi(String var, Integer val,
+					Map<Integer, DD<String, Integer>> alpha, Object... parameters) {
+				String str = (String) parameters[0];
+				Integer integer = (Integer) parameters[1];
+				return DDDImpl.create(var, val,
+						DDDImpl.create(str, integer, id(alpha, val)));
 			}
 
 			protected DD<?, ?> phi1(Object... param1VarArgs) {

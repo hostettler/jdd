@@ -10,9 +10,7 @@ import ch.unige.cui.smv.dd.ValSet;
 
 public class SDDTest {
 	private DD<String, ValSet<Integer>> sdd1;
-
 	private DD<String, ValSet<Integer>> sdd2;
-
 	private ValSet<Integer> set1;
 
 	@Before

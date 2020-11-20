@@ -30,7 +30,7 @@ public class DDDSetOperationTest {
 		DD<String, Integer> dDD5 = DDDImpl.create("B", this.value2);
 		dDD5 = DDDImpl.create("B", this.value2, dDD5);
 		DD<String, Integer> dDD6 = DDDImpl.create("B", this.value3, dDD5);
-		DD<String, Integer> dDD7 = (DD) dDD5.union(dDD6);
+		DD<String, Integer> dDD7 = dDD5.union(dDD6);
 		this.ddd2 = dDD7;
 		System.out.println("ddd1: " + this.ddd1);
 		System.out.println("ddd2: " + this.ddd2);
