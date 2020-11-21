@@ -7,14 +7,22 @@
 	<artifactId>jdd</artifactId>
 	<version>1.0-SNAPSHOT</version>
 
-  	<name>Java Decision Diagram</name>
-  	<url>https://https://github.com/hostettler/jdd</url>
+	<name>Java Decision Diagram</name>
+	<url>https://https://github.com/hostettler/jdd</url>
 	<description>JDD is Java Decision Diagram library. This library provides Java support to encode Data Decision Diagrams and Hierarchical Set Decision Diagrams  as well as set and homomorphic operations. </description>
 
 	<properties>
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
+
+	<scm>
+		<connection>scm:git:ssh://git@github.com/hostettler/jdd.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/hostettler/jdd.git</developerConnection>
+		<url>scm:git:https://github.com/hostettler/jdd.git</url>
+	</scm>
 
 
 	<build>
