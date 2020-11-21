@@ -20,7 +20,7 @@ then
 	echo "Deploy Step 4 - Do the deploy"
     mvn clean deploy --settings .travis/settings.xml -DskipTests=true --batch-mode --update-snapshots -Prelease
 
-	echo "Deploy Step 2 - delete definitly ~/.gnupg"
+	echo "Deploy Step 5 - delete definitly ~/.gnupg"
     if [ ! -z "$TRAVIS" ]; then
         find ~/.gnupg/ -type f -exec shred -f -v {} \; 
         rm -rf ~/.gnupg
