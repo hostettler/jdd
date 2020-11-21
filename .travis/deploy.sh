@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-echo "Deploy script --1"
+
 set -e
-echo "Deploy script --2"
+
 # only do deployment, when travis detects a new tag
 if [ ! -z "$TRAVIS_TAG" ]
 then
