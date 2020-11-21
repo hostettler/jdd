@@ -48,6 +48,11 @@ gpg --keyserver keyserver.ubuntu.com --send-keys ${GPG_KEYNAME}
 echo "GPG Step 6 - Wait for the key to be published"
 while(true); do
   date
-  echo "Call keyserver to check for key"
+  echo "Call keyserver to check for key readiness"
   gpg --keyserver keyserver.ubuntu.com  --recv-keys ${GPG_KEYNAME} && break || sleep 30
 done
+
+echo "GPG Step 7 - wait for 2minutes to let the key being synced"
+sleep 120
+
+echo "GPG Step 8 - end of script"

@@ -51,6 +51,7 @@ public class TutorialPhilo {
 			dDDHom5 = dDDHom5.union(dDDHom4);
 			Hom<PLACE, Integer> dDDHom6 = dDDHom5.fixpoint();
 			DD<PLACE, Integer> object = dDDHom6.phi(dDD, new Object[0]);
+			System.out.println(dDDHom6);
 			System.out.println("Nb states : " + object.getStates());
 			System.out.println("State Space Marking : ");
 			object.printInLibDDDStyle(System.out);

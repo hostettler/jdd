@@ -36,4 +36,5 @@ public class DDDRelocationHom<Var, Val> extends DDDHomImpl<Var, Val> {
 
 		return eq;
 	}
+
 }

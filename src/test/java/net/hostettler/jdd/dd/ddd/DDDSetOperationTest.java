@@ -5,7 +5,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import net.hostettler.jdd.dd.DD;
-import net.hostettler.jdd.dd.ddd.DDDImpl;
 
 public class DDDSetOperationTest {
 	private Integer value1;
@@ -51,6 +50,11 @@ public class DDDSetOperationTest {
 		Assert.assertSame(dDD, this.ddd1.union(this.ddd2));
 		Assert.assertEquals(dDD.getStates(), ((DD) this.ddd1.union(this.ddd2)).getStates(), 0.01D);
 		Assert.assertEquals(3.0D, ((DD) this.ddd1.union(this.ddd2)).getStates(), 0.01D);
+		
+		Assert.assertEquals(DDDImpl.getAny(String.class, Integer.class), (this.ddd1.union(this.ddd2).union(DDDImpl.getTrue(String.class, Integer.class))) );
+		Assert.assertEquals(this.ddd1.union(this.ddd2), (this.ddd1.union(this.ddd2).union(DDDImpl.getFalse(String.class, Integer.class))) );
+		Assert.assertEquals(DDDImpl.getAny(String.class, Integer.class), (this.ddd1.union(this.ddd2).union(DDDImpl.getAny(String.class, Integer.class))) );
+		
 	}
 
 	@Test
@@ -60,6 +64,10 @@ public class DDDSetOperationTest {
 		System.out.println(this.ddd1.difference(this.ddd2));
 		DD<String, Integer> dDD = DDDImpl.create("B", this.value1, DDDImpl.create("B", this.value2));
 		Assert.assertSame(dDD, this.ddd1.difference(this.ddd2));
+		
+		Assert.assertEquals((this.ddd1.union(this.ddd2).difference(DDDImpl.getTrue(String.class, Integer.class))), (this.ddd1.union(this.ddd2).difference(DDDImpl.getTrue(String.class, Integer.class))) );
+		Assert.assertEquals(this.ddd1.union(this.ddd2), (this.ddd1.union(this.ddd2).difference(DDDImpl.getFalse(String.class, Integer.class))) );
+		Assert.assertEquals(DDDImpl.getAny(String.class, Integer.class), (this.ddd1.union(this.ddd2).difference(DDDImpl.getAny(String.class, Integer.class))) );
 	}
 
 	@Test
@@ -69,6 +77,29 @@ public class DDDSetOperationTest {
 		System.out.println(this.ddd1.intersection(this.ddd2));
 		DD<String, Integer> dDD = DDDImpl.create("B", this.value2, DDDImpl.create("B", this.value2));
 		Assert.assertSame(dDD, this.ddd1.intersection(this.ddd2));
+		
+		Assert.assertEquals(DDDImpl.getFalse(String.class, Integer.class), (this.ddd1.union(this.ddd2).intersection(DDDImpl.getTrue(String.class, Integer.class))) );
+		Assert.assertEquals(DDDImpl.getFalse(String.class, Integer.class), (this.ddd1.union(this.ddd2).intersection(DDDImpl.getFalse(String.class, Integer.class))) );
+		Assert.assertEquals(DDDImpl.getAny(String.class, Integer.class), (this.ddd1.union(this.ddd2).intersection(DDDImpl.getAny(String.class, Integer.class))) );
 	}
+	
+	@Test
+	public void testdddSplit() {
+		
+		System.out.println("*** Split ***");				
+		DD<String, Integer> dDD = DDDImpl.create("a", 1);
+		Assert.assertSame(1, dDD.split().size());
+		
+		System.out.println("*** Split ***");		
+		System.out.println(this.ddd1.union(this.ddd2));		
+		Assert.assertSame(3, (this.ddd1.union(this.ddd2)).split().size());
+		
+		for (int i = 1; i < 100; i++) {
+			dDD= dDD.union(DDDImpl.create("a", i));
+		}
+		Assert.assertSame(99, dDD.split().size());
+	}
+	
+	
 }
 

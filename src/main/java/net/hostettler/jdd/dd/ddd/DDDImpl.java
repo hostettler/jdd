@@ -65,10 +65,6 @@ public final class DDDImpl<Var, Val> extends DDImpl<Var, Val> implements DD<Var,
 			return (DD<?, ?>) parameters[0];
 		}
 
-		public Hom<Variable, Value> compose(Hom<Variable, Value> subHom) {
-			return (Hom<Variable, Value>) super.compose((Hom<Variable, Value>) subHom);
-		}
-
 		public int computeHashCode() {
 			return getClass().hashCode() * 7433;
 		}

@@ -115,7 +115,7 @@ public  abstract class DDDHomImpl<Var, Val> extends HomImpl<Var, Val> implements
 		}
 
 		public String toString() {
-			return "o(" + ComposeHom.this.toString() + ", " + this.mHomOp1.toString() + ")";
+			return "o(" + DDDHomImpl.this.toString() + ", " + this.mHomOp1.toString() + ")";
 		}
 	}
 
@@ -180,7 +180,7 @@ public  abstract class DDDHomImpl<Var, Val> extends HomImpl<Var, Val> implements
 		}
 
 		public String toString() {
-			return "+(" + this.toString() + ", " + this.mHomOp1.toString() + ")";
+			return "+(" + DDDHomImpl.this.toString() + ", " + this.mHomOp1.toString() + ")";
 		}
 	}
 
@@ -228,7 +228,7 @@ public  abstract class DDDHomImpl<Var, Val> extends HomImpl<Var, Val> implements
 		}
 
 		public String toString() {
-			return "Fixpoint(" + this.toString() + ")";
+			return "Fixpoint(" + DDDHomImpl.this.toString() + ")";
 		}
 	}
 }

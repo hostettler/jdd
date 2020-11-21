@@ -38,6 +38,9 @@ public class Tutorial1 {
 			}
 		};
 		
-		System.out.println(filter.phi(dDD1, new Object[] { "c", 3 }));
+		DD<String, Integer> dDD7 = DDDImpl.create("a", 1, DDDImpl.create("b", 2, DDDImpl.create("c", 4)));
+		
+		System.out.println(filter.phi(dDD1.union(dDD7), new Object[] { "c", 3 }));
 	}
+
 }

@@ -316,4 +316,52 @@ public class DDDHomTest {
 		dDD3 = (DD<String, Integer>) dDD3.union(dDD4);
 		Assert.assertSame(object, dDD3);
 	}
+	
+	
+	@Test
+	public void testFixpoint() {
+		System.out.println("****** Reloc ********");
+		DDDRelocationHom<String, Integer> dDDRelocationHom = new DDDRelocationHom<String, Integer>("d");
+		DD<String, Integer> dDD1 = DDDImpl.create("a", Integer.valueOf(1));
+		dDD1 = (DD<String, Integer>) dDD1.append(DDDImpl.create("b", Integer.valueOf(2)));
+		dDD1 = (DD<String, Integer>) dDD1.append(DDDImpl.create("c", Integer.valueOf(3)));
+		dDD1 = (DD<String, Integer>) dDD1.append(DDDImpl.create("d", Integer.valueOf(3)));
+		dDD1 = (DD<String, Integer>) dDD1.append(DDDImpl.create("e", Integer.valueOf(3)));
+		DD<String, Integer> dDD2 = DDDImpl.create("a", Integer.valueOf(5));
+		dDD2 = (DD<String, Integer>) dDD2.append(DDDImpl.create("b", Integer.valueOf(6)));
+		dDD2 = (DD<String, Integer>) dDD2.append(DDDImpl.create("c", Integer.valueOf(7)));
+		dDD2 = (DD<String, Integer>) dDD2.append(DDDImpl.create("d", Integer.valueOf(3)));
+		dDD2 = (DD<String, Integer>) dDD2.append(DDDImpl.create("e", Integer.valueOf(3)));
+		dDD1 = (DD<String, Integer>) dDD1.union(dDD2);
+		
+		System.out.println(dDDRelocationHom.phi(dDD1));
+		System.out.println(dDDRelocationHom.fixpoint().phi(dDD1));
+		Assert.assertSame(dDDRelocationHom.phi(dDD1), dDDRelocationHom.fixpoint().phi(dDD1));
+	}
+	
+	@Test
+	public void testSaturation() {
+		System.out.println("****** Reloc ********");
+		Hom<String, Integer> hom = new SimplePropagationDDDHomImpl<String, Integer>() {
+			@Override
+			protected DD<String, Integer> phi(String var, Integer val,
+					Map<Integer, DD<String, Integer>> alpha, Object... parameters) {
+				if (val < 10) {
+					return DDDImpl.create(var, val+1, phi(id(alpha, val)));
+				} else {
+					return DDDImpl.create(var, val, phi(id(alpha, val)));
+				}				
+			}			
+		};
+		DD<String, Integer> dDD1 = DDDImpl.create("a", Integer.valueOf(1));
+		dDD1 = (DD<String, Integer>) dDD1.append(DDDImpl.create("b", Integer.valueOf(1)));
+		dDD1 = (DD<String, Integer>) dDD1.append(DDDImpl.create("c", Integer.valueOf(1)));
+		dDD1 = (DD<String, Integer>) dDD1.append(DDDImpl.create("d", Integer.valueOf(1)));
+		dDD1 = (DD<String, Integer>) dDD1.append(DDDImpl.create("e", Integer.valueOf(1)));
+
+		System.out.println(dDD1);
+		System.out.println(hom.phi(dDD1));
+		System.out.println(hom.saturate().phi(dDD1));
+		Assert.assertSame(10, hom.saturate().phi(dDD1).getSize());
+	}
 }

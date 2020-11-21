@@ -7,6 +7,7 @@ import org.junit.Test;
 import net.hostettler.jdd.dd.DD;
 import net.hostettler.jdd.dd.ObjSet;
 import net.hostettler.jdd.dd.ValSet;
+import net.hostettler.jdd.dd.ddd.DDDImpl;
 import net.hostettler.jdd.dd.sdd.SDDImpl;
 import net.hostettler.jdd.dd.util.DDGraphGenerator;
 
@@ -177,5 +178,19 @@ public class SDDSetOperationTest {
 		for (Object sDD1 : this.sdd1.split())
 			sDD =  sDD.union((DD) sDD1);
 		Assert.assertEquals(this.sdd1, sDD);
+
+		DD<String, ValSet<Integer>> sDD1 = SDDImpl.create("a", ObjSet.create(1));
+		for (int i = 1; i < 15; i++) {
+			sDD1= sDD1.union(SDDImpl.create("a", ObjSet.create(i)));
+		}
+		System.out.println(sDD1);
+		Assert.assertSame(14, sDD1.split().size());
+		
+		sDD1 = SDDImpl.create("a", ObjSet.create(1));
+		for (int i = 1; i < 100; i++) {
+			sDD1= sDD1.union(SDDImpl.create("a", ObjSet.create(i)));
+		}
+		System.out.println(sDD1);
+		Assert.assertSame(99, sDD1.split().size());
 	}
 }

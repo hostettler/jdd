@@ -393,6 +393,7 @@ public class SDDHomTest {
 		System.out.println("****** Local ********");
 		SDDLocalHom<String, Integer, String, Integer> sDDLocalHom = new SDDLocalHom<String, Integer, String, Integer>(
 				new DDDUp("a", Integer.valueOf(1)), "a");
+		System.out.println(sDDLocalHom);
 		DD<String, ValSet<Integer>> sDD1 = SDDImpl.create("a", DDDImpl.create("b", Integer.valueOf(1)));
 		sDD1 = sDD1.append(SDDImpl.create("b", ObjSet.create(Integer.valueOf(2))));
 		sDD1 = sDD1.append(SDDImpl.create("c", ObjSet.create(Integer.valueOf(3))));
