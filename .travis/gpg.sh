@@ -2,9 +2,11 @@
 
 set -e
 
+echo "GPG Step 1 - Create random passphrase"
 # create a random passphrase
 export GPG_PASSPHRASE=$(echo "$RANDOM$(date)" | md5sum | cut -d\  -f1)
 
+echo "GPG Step 2 - Create random passphrase"
 # configuration to generate gpg keys
 cat >gen-key-script <<EOF
     %echo Generating a basic OpenPGP key
@@ -20,6 +22,7 @@ cat >gen-key-script <<EOF
     %echo done
 EOF
 
+echo "GPG Step 3 - Create random passphrase"
 # create a local keypair with given configuration
 gpg --batch --gen-key gen-key-script
 
@@ -32,15 +35,19 @@ gpg --batch --gen-key gen-key-script
 export GPG_KEYNAME=$(gpg -K | grep ^sec | cut -d/  -f2 | cut -d\  -f1 | head -n1)
 
 # cleanup local configuration
+echo "GPG Step 4 - clean keys"
 shred gen-key-script
 
 # publish the gpg key
 # (use keyserver.ubuntu.com as travis request keys from this server, 
-#  we avoid synchronization issues, while releasing) 
+#  we avoid synchronization issues, while releasing)
+echo "GPG Step 5 - Publish keys" 
 gpg --keyserver keyserver.ubuntu.com --send-keys ${GPG_KEYNAME}
 
 # wait for the key beeing accessible
+echo "GPG Step 6 - Wait for the key to be published"
 while(true); do
   date
+  echo "Call keyserver to check for key"
   gpg --keyserver keyserver.ubuntu.com  --recv-keys ${GPG_KEYNAME} && break || sleep 30
 done
