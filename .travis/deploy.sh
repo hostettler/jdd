@@ -5,21 +5,24 @@ set -e
 # only do deployment, when travis detects a new tag
 if [ ! -z "$TRAVIS_TAG" ]
 then
-    echo "on a tag -> set pom.xml <version> to $TRAVIS_TAG"
+    echo "Step 1 : on a tag -> set pom.xml <version> to $TRAVIS_TAG"
     mvn --settings .travis/settings.xml org.codehaus.mojo:versions-maven-plugin:2.3:set -DnewVersion=$TRAVIS_TAG -Prelease
 
+	echo "Step 2 : delete definitly ~/.gnupg"
     if [ ! -z "$TRAVIS" -a -f "$HOME/.gnupg" ]; then
-        shred -v ~/.gnupg/*
+        find ~/.gnupg/ -type f -exec shred -f -v {} \;
         rm -rf ~/.gnupg
     fi
 
+	echo "Step 3 : Generate GPG key"
     source .travis/gpg.sh
 
+	echo "Step 4 : Do the deploy"
     mvn clean deploy --settings .travis/settings.xml -DskipTests=true --batch-mode --update-snapshots -Prelease
 
-
+	echo "Step 2 : delete definitly ~/.gnupg"
     if [ ! -z "$TRAVIS" ]; then
-        shred -v ~/.gnupg/*
+        find ~/.gnupg/ -type f -exec shred -f -v {} \; 
         rm -rf ~/.gnupg
     fi
 else
