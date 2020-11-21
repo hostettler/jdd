@@ -275,6 +275,7 @@ public class DDDHomTest {
 		
 		Hom<String, Integer> composition = dDDHomImpl1.compose(dDDHomImpl2);
 		
+		System.out.println(composition);
 		DD<String, Integer>  object = composition.phi(dDD, new Object[0]);
 		System.out.println(object);
 		Assert.assertEquals(
@@ -335,6 +336,7 @@ public class DDDHomTest {
 		dDD1 = (DD<String, Integer>) dDD1.union(dDD2);
 		
 		System.out.println(dDDRelocationHom.phi(dDD1));
+		System.out.println(dDDRelocationHom.fixpoint());
 		System.out.println(dDDRelocationHom.fixpoint().phi(dDD1));
 		Assert.assertSame(dDDRelocationHom.phi(dDD1), dDDRelocationHom.fixpoint().phi(dDD1));
 	}
@@ -359,8 +361,11 @@ public class DDDHomTest {
 		dDD1 = (DD<String, Integer>) dDD1.append(DDDImpl.create("d", Integer.valueOf(1)));
 		dDD1 = (DD<String, Integer>) dDD1.append(DDDImpl.create("e", Integer.valueOf(1)));
 
+		
+		System.out.println(hom);
 		System.out.println(dDD1);
 		System.out.println(hom.phi(dDD1));
+		System.out.println(hom.saturate());
 		System.out.println(hom.saturate().phi(dDD1));
 		Assert.assertSame(10, hom.saturate().phi(dDD1).getSize());
 	}
