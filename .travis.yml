@@ -1,9 +1,17 @@
 language: java
+
 jdk:
 - openjdk11
+
 addons:
   sonarcloud:
     organization: hostettler-github
+    
+cache:
+  directories:
+  - .autoconf
+  - $HOME/.m2
+
 env:
   global:
   - secure: Sksudy8U/lZ+Ap+oWRZaC4kAHIgzPQwjnc+A0up+Hs0VWeXVgyoaUDUkiuOdgNcTbzakiFpqubHsFaxdq8Pi7N7NHbCrBGpryQ+hldrsY3TWo5WOCI89CQwRfXYZyQJRe4j1cmw2PJiCFi6wlCyxO70OfMit5OE4efr1GWGAuFpZOIXiR5wZutYuIXYjRsFPeOeiKhkllBmnkNArmQENGivj3bM2/IzN9bTkcjTVRiSyykI6YKU69e/Ugt8caN0XkD1FToybDXpKl/BBqE/Hoh8JuvtJYGfgdsx4QKI+H94wCXAQ3MDVaCKKZdVbJuQbWTT2USWN6+r9Ylhn6fLRIeUkoc76gxr8kepE6ZUkiQzYRJFZoHpECdNgowBez/2cNffFGvjhsoNI+fdlWaMZSak2tg8GEi3qKXsoev9wc6nNGykHEATyhxJeMyKxEpf7H9XSh3Yk2yDL88L5A04UDAWfflkJRotXpiDlrnkWKjPevCmUvcecbzIrK6GR6CGrqbqfNFbmvpUfUc1tjrR23WkpIEEAntEP6lMEzxJGrB0bcd9B0LHdSbgWwfNDN+3b6h4tbhTc97bbtSv2IKD6x914zotHJ962pZkVwAPxN1lR43xQ4qHedGbuve3JuR4Bpf/scwCJUBmSB9aqtxowT5fN//cAuGOJEVo0lCaZx3U=
