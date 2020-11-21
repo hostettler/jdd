@@ -21,8 +21,8 @@ public class DDDHanoiTest {
 
 	@Test
 	public void testHanoi() throws IOException {
-		ArrayList<Ring> arrayList = new ArrayList();
-		ArrayList<Pole> arrayList1 = new ArrayList();
+		ArrayList<Ring> arrayList = new ArrayList<>();
+		ArrayList<Pole> arrayList1 = new ArrayList<>();
 		byte b;
 		for (b = 0; b < 10; b++)
 			arrayList.add(new Ring(b, b));

@@ -36,7 +36,7 @@ public class SDDDiningPhilosophersTest {
 	}
 
 	Hom<STATES, Integer> saturateLocal(Hom<STATES, Integer> paramHom) {
-		Hom<STATES, Integer> dDDHom =  paramHom.union(new DDDIdHom());
+		Hom<STATES, Integer> dDDHom =  paramHom.union(new DDDIdHom<>());
 		return  dDDHom.fixpoint();
 	}
 
@@ -46,7 +46,7 @@ public class SDDDiningPhilosophersTest {
 	}
 
 	private List<Hom<Integer, ValSet<Integer>>> getTransitionRelation() {
-		ArrayList<Hom<Integer, ValSet<Integer>>> arrayList = new ArrayList();
+		ArrayList<Hom<Integer, ValSet<Integer>>> arrayList = new ArrayList<>();
 		HMinus hMinus1 = new HMinus(STATES.Idle, 1);
 		HPlus hPlus2 = new HPlus(STATES.WaitL, Integer.valueOf(1));
 		HPlus hPlus3 = new HPlus(STATES.WaitR, Integer.valueOf(1));

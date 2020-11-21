@@ -153,7 +153,7 @@ public final class DDDImpl<Var, Val> extends DDImpl<Var, Val> implements DD<Var,
 				Set<Val> domain = new HashSet<Val>(op1.getAlpha().keySet());
 
 				domain.addAll(op2.getAlpha().keySet());
-				dD = new DDDImpl();
+				dD = new DDDImpl<>();
 				dD.setVariable(op1.getVariable());
 
 				boolean falseSubTree = true;
@@ -182,7 +182,7 @@ public final class DDDImpl<Var, Val> extends DDImpl<Var, Val> implements DD<Var,
 		if (DDD_TRUE == tree || DDD_FALSE == tree || DDD_ANY == tree) {
 			tDD = tree;
 		} else {
-			DDDImpl dDDImpl = new DDDImpl();
+			DDDImpl dDDImpl = new DDDImpl<>();
 			dDDImpl.setVariable(tree.getVariable());
 			for (Val value : tree.getDomain()) {
 				DD<Var, Val> subtree = tree.getAlpha(value);
@@ -229,7 +229,7 @@ public final class DDDImpl<Var, Val> extends DDImpl<Var, Val> implements DD<Var,
 
 	public List<?> split() {
 		if (getStates() < 2.0D) {
-			List<DDDImpl<Var, Val>> l = new ArrayList();
+			List<DDDImpl<Var, Val>> l = new ArrayList<>();
 			l.add(this);
 			return l;
 		}

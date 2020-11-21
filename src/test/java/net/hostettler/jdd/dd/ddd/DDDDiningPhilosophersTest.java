@@ -49,7 +49,7 @@ public class DDDDiningPhilosophersTest {
 			dDD1 = (DD<?, ?>) dDD1.append( (DD) buildInitStateForPhilo(b1));
 		dDD1.printInLibDDDStyle(System.out);
 		System.out.println((new DDGraphGenerator()).outputDOTFormat( (DD) dDD1));
-		ArrayList<Hom> arrayList = new ArrayList();
+		ArrayList<Hom> arrayList = new ArrayList<>();
 		for (byte b2 = 0; b2 < NB_PHILO; b2++) {
 			HMinus hMinus1 = new HMinus(buildStateId(STATES.Idle, Integer.valueOf(b2)), 1);
 			HPlus hPlus1 = new HPlus(buildStateId(STATES.WaitL, Integer.valueOf(b2)), Integer.valueOf(1));

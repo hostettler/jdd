@@ -343,7 +343,7 @@ public final class SDDImpl<Var, Val> extends DDImpl<Var, ValSet<Val>> implements
 
 	public List<DD<Var, Val>> split() {
 		if (getStates() < 2.0D) {
-			List<SDDImpl<Var, Val>> l = new ArrayList();
+			List<SDDImpl<Var, Val>> l = new ArrayList<>();
 			l.add(this);
 			return (List) l;
 		}

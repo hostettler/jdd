@@ -25,12 +25,12 @@ public class YoYoHom<SDDTVar, SDDTVal, DDDTVar, DDDTVal> extends SDDHomImpl<SDDT
 			Object... parameters) {
 		List<?> paramContainer = null;
 
-		List<?> params = new ArrayList();
+		List<?> params = new ArrayList<>();
 		if (parameters.length > 0) {
 
 			paramContainer = (List) parameters[0];
 		} else {
-			paramContainer = new ArrayList();
+			paramContainer = new ArrayList<>();
 		}
 
 		DD<DDDTVar, DDDTVal> state = (DD) DDDImpl.DDD_FALSE;
