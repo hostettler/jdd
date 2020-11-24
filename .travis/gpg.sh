@@ -56,6 +56,6 @@ while(true); do
 done
 
 echo "GPG Step 7 - wait for 2minutes to let the key being synced"
-sleep 120
+sleep 600
 
 echo "GPG Step 8 - end of script"
