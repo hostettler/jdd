@@ -46,9 +46,9 @@ shred gen-key-script
 #  we avoid synchronization issues, while releasing)
 echo "GPG Step 5 - Publish keys" 
 gpg --verbose --keyserver hkp://keyserver.ubuntu.com --send-keys ${GPG_KEYNAME}
-gpg --verbose --keyserver hkp://keys.openpgp.org --send-keys ${GPG_KEYNAME}
+gpg --verbose --keyserver hkps://keys.openpgp.org --send-keys ${GPG_KEYNAME}
 gpg --verbose --keyserver hkp://keys.gnupg.net --send-keys ${GPG_KEYNAME}
-gpg --verbose --keyserver hkp://pool.sks-keyservers.net --send-keys ${GPG_KEYNAME}
+gpg --verbose --keyserver hkps://pool.sks-keyservers.net --send-keys ${GPG_KEYNAME}
 
 
 # wait for the key beeing accessible
@@ -57,9 +57,9 @@ while(true); do
   date
   echo "Call keyserver to check for key readiness"
   gpg --verbose --keyserver hkp://keyserver.ubuntu.com  --recv-keys ${GPG_KEYNAME} && break || sleep 30
-  gpg --verbose --keyserver hkp://keys.openpgp.org  --recv-keys ${GPG_KEYNAME} && break || sleep 30
+  gpg --verbose --keyserver hkps://keys.openpgp.org  --recv-keys ${GPG_KEYNAME} && break || sleep 30
   gpg --verbose --keyserver hkp://keys.gnupg.net  --recv-keys ${GPG_KEYNAME} && break || sleep 30
-  gpg --verbose --keyserver hkp://pool.sks-keyservers.net  --recv-keys ${GPG_KEYNAME} && break || sleep 30
+  gpg --verbose --keyserver hkps://pool.sks-keyservers.net  --recv-keys ${GPG_KEYNAME} && break || sleep 30
 done
 
 echo "GPG Step 7 - wait for 2minutes to let the key being synced"
