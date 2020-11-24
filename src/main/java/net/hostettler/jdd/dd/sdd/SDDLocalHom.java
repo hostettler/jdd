@@ -7,31 +7,31 @@ import net.hostettler.jdd.dd.Hom;
 import net.hostettler.jdd.dd.ValSet;
 import net.hostettler.jdd.dd.ddd.DDDImpl;
 
-public class SDDLocalHom<Var, Val, DDDTVar, DDDTVal> extends SDDHomImpl<Var, Val> {
+public class SDDLocalHom<VAR, VAL, DDDTVar, DDDTVal> extends SDDHomImpl<VAR, VAL> {
 	
 	private Hom<DDDTVar, DDDTVal> mHom;
-	private Var mVariable;
+	private VAR mVariable;
 
-	public SDDLocalHom(Hom<DDDTVar, DDDTVal> hom, Var variable) {
+	public SDDLocalHom(Hom<DDDTVar, DDDTVal> hom, VAR variable) {
 		this.mHom = hom;
 		this.mVariable = variable;
 	}
 
-	protected DD<Var, ValSet<Val>> phi(Var e, ValSet<Val> x, Map<ValSet<Val>, DD<Var, ValSet<Val>>> alpha,
+	protected DD<VAR, ValSet<VAL>> phi(VAR e, ValSet<VAL> x, Map<ValSet<VAL>, DD<VAR, ValSet<VAL>>> alpha,
 			Object... parameters) {
-		ValSet<Val> newX = this.mHom.phi((DD) x, new Object[0]);
+		ValSet<VAL> newX = this.mHom.phi((DD) x, new Object[0]);
 		if (newX != DDDImpl.DDD_FALSE) {
 			return SDDImpl.create(e,  newX,  id(alpha, x));
 		}
 		return (DD)SDDImpl.SDD_FALSE;
 	}
 
-	public boolean isLocallyInvariant(DD<Var, ValSet<Val>> dd) {
+	public boolean isLocallyInvariant(DD<VAR, ValSet<VAL>> dd) {
 		return (this.mVariable != null && !dd.getVariable().equals(this.mVariable));
 	}
 
-	protected DD<?, ?> phi1(Object... parameters) {
-		return  getDDFalse();
+	protected DD<VAR, ValSet<VAL>> phi1(Object... parameters) {
+		return  getFalse();
 	}
 
 	protected int computeHashCode() {
@@ -58,7 +58,7 @@ public class SDDLocalHom<Var, Val, DDDTVar, DDDTVal> extends SDDHomImpl<Var, Val
 		return this.mHom;
 	}
 
-	public Var getVariable() {
+	public VAR getVariable() {
 		return this.mVariable;
 	}
 }

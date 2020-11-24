@@ -41,7 +41,7 @@ public class Tutorial3 {
 		}
 
 		protected DD<String, Integer>phi1(Object... param1VarArgs) {
-			return getDDAny();
+			return getAny();
 		}
 
 		public int computeHashCode() {

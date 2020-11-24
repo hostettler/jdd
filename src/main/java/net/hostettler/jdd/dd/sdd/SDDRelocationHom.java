@@ -5,23 +5,23 @@ import java.util.Map;
 import net.hostettler.jdd.dd.DD;
 import net.hostettler.jdd.dd.ValSet;
 
-public class SDDRelocationHom<TVar, TVal> extends SDDHomImpl<TVar, TVal> {
-	private TVar mVar;
+public class SDDRelocationHom<VAR, VAL> extends SDDHomImpl<VAR, VAL> {
+	private VAR mVar;
 
-	public SDDRelocationHom(TVar var) {
+	public SDDRelocationHom(VAR var) {
 		this.mVar = var;
 	}
 
-	protected DD<TVar, ValSet<TVal>> phi(TVar e, ValSet<TVal> x, Map<ValSet<TVal>, DD<TVar, ValSet<TVal>>> alpha,
+	protected DD<VAR, ValSet<VAL>> phi(VAR e, ValSet<VAL> x, Map<ValSet<VAL>, DD<VAR, ValSet<VAL>>> alpha,
 			Object... parameters) {
 		if (this.mVar.equals(e)) {
 			return SDDImpl.create(e, x, (DD) id(alpha, x));
 		}
-		return (DD<TVar, ValSet<TVal>>) (new SDDUp(e, x)).phi( phi(id(alpha, x), parameters), parameters);
+		return (DD<VAR, ValSet<VAL>>) (new SDDUp(e, x)).phi( phi(id(alpha, x), parameters), parameters);
 	}
 
-	protected DD<?, ?> phi1(Object... parameters) {
-		return SDDImpl.SDD_ANY;
+	protected DD<VAR, ValSet<VAL>> phi1(Object... parameters) {
+		return this.getAny();
 	}
 
 	public int computeHashCode() {

@@ -10,8 +10,6 @@ import org.junit.Test;
 import net.hostettler.jdd.dd.DD;
 import net.hostettler.jdd.dd.DDImpl;
 import net.hostettler.jdd.dd.Hom;
-import net.hostettler.jdd.dd.ddd.DDDHomImpl;
-import net.hostettler.jdd.dd.ddd.DDDImpl;
 import net.hostettler.jdd.dd.util.DDGraphGenerator;
 
 public class DDDDiningPhilosophersTest {
@@ -44,44 +42,44 @@ public class DDDDiningPhilosophersTest {
 
 	@Test
 	public void testDiningPhilo() throws IOException {
-		DD<?, ?> dDD1 = DDDImpl.DDD_TRUE;
+		DD<String, Integer> dDD1 = DDDImpl.getTrue(String.class, Integer.class);
 		for (byte b1 = 0; b1 < NB_PHILO; b1++)
-			dDD1 = (DD<?, ?>) dDD1.append( (DD) buildInitStateForPhilo(b1));
+			dDD1 =  dDD1.append(buildInitStateForPhilo(b1));
 		dDD1.printInLibDDDStyle(System.out);
-		System.out.println((new DDGraphGenerator()).outputDOTFormat( (DD) dDD1));
-		ArrayList<Hom> arrayList = new ArrayList<>();
+		System.out.println((new DDGraphGenerator()).outputDOTFormat(dDD1));
+		ArrayList<Hom<String, Integer>> arrayList = new ArrayList<>();
 		for (byte b2 = 0; b2 < NB_PHILO; b2++) {
 			HMinus hMinus1 = new HMinus(buildStateId(STATES.Idle, Integer.valueOf(b2)), 1);
 			HPlus hPlus1 = new HPlus(buildStateId(STATES.WaitL, Integer.valueOf(b2)), Integer.valueOf(1));
 			HPlus hPlus2 = new HPlus(buildStateId(STATES.WaitR, Integer.valueOf(b2)), Integer.valueOf(1));
-			Hom dDDHom1 = (Hom) hMinus1.compose(hPlus1.compose(hPlus2));
+			Hom<String, Integer> dDDHom1 = hMinus1.compose(hPlus1.compose(hPlus2));
 			arrayList.add(dDDHom1);
 			hMinus1 = new HMinus(buildStateId(STATES.WaitL, Integer.valueOf(b2)), 1);
 			HMinus hMinus2 = new HMinus(buildStateId(STATES.Fork, Integer.valueOf(b2)), 1);
 			hPlus2 = new HPlus(buildStateId(STATES.HasL, Integer.valueOf(b2)), Integer.valueOf(1));
-			Hom dDDHom2 = (Hom) hMinus1.compose(hMinus2.compose(hPlus2));
+			Hom<String, Integer> dDDHom2 =  hMinus1.compose(hMinus2.compose(hPlus2));
 			arrayList.add(dDDHom2);
 			hMinus1 = new HMinus(buildStateId(STATES.WaitR, Integer.valueOf(b2)), 1);
 			hMinus2 = new HMinus(buildStateId(STATES.Fork, Integer.valueOf((b2 + 1) % NB_PHILO)), 1);
 			hPlus2 = new HPlus(buildStateId(STATES.HasR, Integer.valueOf(b2)), Integer.valueOf(1));
-			Hom dDDHom3 = (Hom) hMinus1.compose(hMinus2.compose(hPlus2));
+			Hom<String, Integer> dDDHom3 =  hMinus1.compose(hMinus2.compose(hPlus2));
 			arrayList.add(dDDHom3);
 			hMinus1 = new HMinus(buildStateId(STATES.HasL, Integer.valueOf(b2)), 1);
 			hMinus2 = new HMinus(buildStateId(STATES.HasR, Integer.valueOf(b2)), 1);
 			hPlus2 = new HPlus(buildStateId(STATES.Idle, Integer.valueOf(b2)), Integer.valueOf(1));
 			HPlus hPlus3 = new HPlus(buildStateId(STATES.Fork, Integer.valueOf(b2)), Integer.valueOf(1));
 			HPlus hPlus4 = new HPlus(buildStateId(STATES.Fork, Integer.valueOf((b2 + 1) % NB_PHILO)), Integer.valueOf(1));
-			Hom dDDHom4 = (Hom) hMinus1.compose(hMinus2.compose(hPlus2.compose(hPlus3.compose(hPlus4))));
+			Hom<String, Integer> dDDHom4 =  hMinus1.compose(hMinus2.compose(hPlus2.compose(hPlus3.compose(hPlus4))));
 			arrayList.add(dDDHom4);
 		}
 		long l = System.currentTimeMillis();
-		DD<?, ?> dDD2 = dDD1;
+		DD<String, Integer> dDD2 = dDD1;
 		while (true) {
-			DD<?, ?> dDD = dDD2;
-			for (Hom dDDHom : arrayList) {
-				Object object = dDDHom.phi(dDD2, new Object[0]);
+			DD<String, Integer> dDD = dDD2;
+			for (Hom<String, Integer> dDDHom : arrayList) {
+				DD<String, Integer> object = dDDHom.phi(dDD2);
 				if (object != DDDImpl.DDD_FALSE)
-					dDD2 = (DD<?, ?>) dDD2.union((DD) object);
+					dDD2 = dDD2.union(object);
 			}
 			if (dDD2 == dDD) {
 				System.out.println("Time : " + (System.currentTimeMillis() - l));
@@ -120,7 +118,7 @@ public class DDDDiningPhilosophersTest {
 		}
 
 		protected DD<String, Integer> phi1(Object... param1VarArgs) {
-			return   getDDFalse();
+			return   getFalse();
 		}
 
 		public int computeHashCode() {
@@ -131,7 +129,7 @@ public class DDDDiningPhilosophersTest {
 			boolean bool = (this == param1Object) ? true : false;
 			if (!bool && param1Object instanceof HPlus) {
 				HPlus hPlus = (HPlus) param1Object;
-				bool = (this.mPlace == hPlus.mPlace && this.mValue.equals(hPlus.mValue)) ? true : false;
+				bool = (this.mPlace.equals(hPlus.mPlace) && this.mValue.equals(hPlus.mValue)) ? true : false;
 			}
 			return bool;
 		}
@@ -153,13 +151,13 @@ public class DDDDiningPhilosophersTest {
 					? ((param1Integer.intValue() >= this.mValue)
 							? DDDImpl.create(param1String, Integer.valueOf(param1Integer.intValue() - this.mValue),
 									(DD<String, Integer>) id(param1Map, param1Integer))
-							: (DD<String, Integer>) getDDFalse())
+							: (DD<String, Integer>) getFalse())
 					: DDDImpl.create(param1String, param1Integer,
 							(DD<String, Integer>) phi(id(param1Map, param1Integer), new Object[0]));
 		}
 
 		protected DD<String, Integer> phi1(Object... param1VarArgs) {
-			return  getDDFalse();
+			return  getFalse();
 		}
 
 		public int computeHashCode() {

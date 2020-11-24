@@ -11,7 +11,7 @@ public class ArrayWrapper {
 
 	public boolean equals(Object that) {
 		boolean eq = (this == that);
-		if (!eq) {
+		if (!eq && that instanceof ArrayWrapper) {
 			ArrayWrapper thatParam = (ArrayWrapper) that;
 			if (thatParam != null) {
 				eq = equalsArray(this.mParameterArray, thatParam.mParameterArray);

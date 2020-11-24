@@ -1,13 +1,5 @@
 package net.hostettler.jdd.dd.sdd;
 
-import net.hostettler.jdd.dd.DD;
-import net.hostettler.jdd.dd.DDImpl;
-import net.hostettler.jdd.dd.Hom;
-import net.hostettler.jdd.dd.ObjSet;
-import net.hostettler.jdd.dd.Terminator;
-import net.hostettler.jdd.dd.ValSet;
-import net.hostettler.jdd.dd.ddd.DDDImpl;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -15,7 +7,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class SDDImpl<Var, Val> extends DDImpl<Var, ValSet<Val>> implements DD<Var, ValSet<Val>> {
+import net.hostettler.jdd.dd.DD;
+import net.hostettler.jdd.dd.DDImpl;
+import net.hostettler.jdd.dd.ObjSet;
+import net.hostettler.jdd.dd.Terminator;
+import net.hostettler.jdd.dd.ValSet;
+
+public final class SDDImpl<VAR, VAL> extends DDImpl<VAR, ValSet<VAL>> implements DD<VAR, ValSet<VAL>> {
 
 	private static AppendHom mAppendHom = new AppendHom<Object, Object>();
 
@@ -26,27 +24,27 @@ public final class SDDImpl<Var, Val> extends DDImpl<Var, ValSet<Val>> implements
 	public static final DD<?, ?> SDD_FALSE = new SDDImpl(Terminator.FALSE);
 	public static final DD<?, ?> SDD_TRUE = new SDDImpl(Terminator.TRUE, 1.0D);
 
-	private SDDImpl(Var variable) {
+	private SDDImpl(VAR variable) {
 		super(variable);
 	}
 
-	private SDDImpl(Var variable, double nbStates) {
+	private SDDImpl(VAR variable, double nbStates) {
 		super(variable, nbStates);
 	}
 
-	private SDDImpl(Var variable, double nbStates, boolean ignoreDD) {
+	private SDDImpl(VAR variable, double nbStates, boolean ignoreDD) {
 		super(variable, nbStates, ignoreDD);
 	}
 
-	private SDDImpl(Var variable, Map<ValSet<Val>, DD<Var, ValSet<Val>>> alpha) {
+	private SDDImpl(VAR variable, Map<ValSet<VAL>, DD<VAR, ValSet<VAL>>> alpha) {
 		super(variable, alpha);
 	}
 
-	private SDDImpl(Var variable, ValSet<Val> value, DD<Var, ValSet<Val>> sdd) {
+	private SDDImpl(VAR variable, ValSet<VAL> value, DD<VAR, ValSet<VAL>> sdd) {
 		super(variable, value, sdd);
 	}
 
-	private SDDImpl(Var variable, ValSet<Val> value) {
+	private SDDImpl(VAR variable, ValSet<VAL> value) {
 		super(variable, value, (DD) SDD_TRUE);
 	}
 
@@ -69,21 +67,21 @@ public final class SDDImpl<Var, Val> extends DDImpl<Var, ValSet<Val>> implements
 		return (DD<Var, ValSet<Val>>) canonicity(newSDD);
 	}
 
-	protected DD<Var, ValSet<Val>> append(DD<Var, ValSet<Val>> operand1, DD<Var, ValSet<Val>> operand2) {
-		DD<Var, ValSet<Val>> dD = mAppendHom.phi(operand1, new Object[] { operand2 });
+	protected DD<VAR, ValSet<VAL>> append(DD<VAR, ValSet<VAL>> operand1, DD<VAR, ValSet<VAL>> operand2) {
+		DD<VAR, ValSet<VAL>> dD = mAppendHom.phi(operand1, new Object[] { operand2 });
 		dD.setIgnoreThisDD(operand1.ignoreDD() & operand2.ignoreDD());
 		return dD;
 	}
 
-	protected double getValueStates(ValSet<Val> value) {
+	protected double getValueStates(ValSet<VAL> value) {
 		if (value instanceof DD) {
 			return ((DD) value).getStates();
 		}
 		return value.getSize();
 	}
 
-	protected DD<Var, ValSet<Val>> setOperation(DDImpl.OP[][] operation, DD<Var, ValSet<Val>> operand1,
-			DD<Var, ValSet<Val>> operand2) {
+	protected DD<VAR, ValSet<VAL>> setOperation(DDImpl.OP[][] operation, DD<VAR, ValSet<VAL>> operand1,
+			DD<VAR, ValSet<VAL>> operand2) {
 		if (operand1 == operand2) {
 			switch (operation[3][3]) {
 
@@ -94,53 +92,53 @@ public final class SDDImpl<Var, Val> extends DDImpl<Var, ValSet<Val>> implements
 				return operand1;
 
 			case RET_FIRST_OP:
-				return getDDFalse();
+				return getFalse();
 			}
 			throw new IllegalArgumentException();
 		}
 
-		DD<Var, ValSet<Val>> set = null;
+		DD<VAR, ValSet<VAL>> set = null;
 
-		if (getDDFalse() == operand1) {
-			if (getDDFalse() == operand2) {
+		if (getFalse() == operand1) {
+			if (getFalse() == operand2) {
 
 				set = eval(operation[0][0], operand1, operand2);
-			} else if (getDDTrue() == operand2) {
+			} else if (getTrue() == operand2) {
 
 				set = eval(operation[0][1], operand1, operand2);
-			} else if (getDDAny() == operand2) {
+			} else if (getAny() == operand2) {
 
 				set = eval(operation[0][2], operand1, operand2);
 			} else {
 
 				set = eval(operation[0][3], operand1, operand2);
 			}
-		} else if (getDDTrue() == operand1) {
-			if (getDDFalse() == operand2) {
+		} else if (getTrue() == operand1) {
+			if (getFalse() == operand2) {
 				set = eval(operation[1][0], operand1, operand2);
-			} else if (getDDTrue() == operand2) {
+			} else if (getTrue() == operand2) {
 				set = eval(operation[1][1], operand1, operand2);
-			} else if (getDDAny() == operand2) {
+			} else if (getAny() == operand2) {
 				set = eval(operation[1][2], operand1, operand2);
 			} else {
 				set = eval(operation[1][3], operand1, operand2);
 			}
-		} else if (getDDAny() == operand1) {
-			if (getDDFalse() == operand2) {
+		} else if (getAny() == operand1) {
+			if (getFalse() == operand2) {
 				set = eval(operation[2][0], operand1, operand2);
-			} else if (getDDTrue() == operand2) {
+			} else if (getTrue() == operand2) {
 				set = eval(operation[2][1], operand1, operand2);
-			} else if (getDDAny() == operand2) {
+			} else if (getAny() == operand2) {
 				set = eval(operation[2][2], operand1, operand2);
 			} else {
 				set = eval(operation[2][3], operand1, operand2);
 			}
 
-		} else if (getDDFalse() == operand2) {
+		} else if (getFalse() == operand2) {
 			set = eval(operation[3][0], operand1, operand2);
-		} else if (getDDTrue() == operand2) {
+		} else if (getTrue() == operand2) {
 			set = eval(operation[3][1], operand1, operand2);
-		} else if (getDDAny() == operand2) {
+		} else if (getAny() == operand2) {
 			set = eval(operation[3][2], operand1, operand2);
 
 		} else if (!operand1.getVariable().equals(operand2.getVariable())) {
@@ -149,14 +147,14 @@ public final class SDDImpl<Var, Val> extends DDImpl<Var, ValSet<Val>> implements
 
 		} else {
 
-			set = getDDFalse();
-			Var variable = (Var) operand2.getVariable();
+			set = getFalse();
+			VAR variable = (VAR) operand2.getVariable();
 
-			Map<ValSet<Val>, DD<Var, ValSet<Val>>> alpha1 = operand1.getAlpha();
-			Map<ValSet<Val>, DD<Var, ValSet<Val>>> alpha2 = operand2.getAlpha();
-			Map<ValSet<Val>, DD<Var, ValSet<Val>>> alpha = new HashMap<ValSet<Val>, DD<Var, ValSet<Val>>>();
+			Map<ValSet<VAL>, DD<VAR, ValSet<VAL>>> alpha1 = operand1.getAlpha();
+			Map<ValSet<VAL>, DD<VAR, ValSet<VAL>>> alpha2 = operand2.getAlpha();
+			Map<ValSet<VAL>, DD<VAR, ValSet<VAL>>> alpha = new HashMap<ValSet<VAL>, DD<VAR, ValSet<VAL>>>();
 
-			Map<DD<Var, Val>, ValSet<Val>> result = new HashMap<DD<Var, Val>, ValSet<Val>>();
+			Map<DD<VAR, VAL>, ValSet<VAL>> result = new HashMap<DD<VAR, VAL>, ValSet<VAL>>();
 
 			switch (operation[3][3]) {
 
@@ -175,7 +173,7 @@ public final class SDDImpl<Var, Val> extends DDImpl<Var, ValSet<Val>> implements
 				throw new IllegalArgumentException();
 			}
 
-			for (Map.Entry<DD<Var, Val>, ValSet<Val>> d : result.entrySet()) {
+			for (Map.Entry<DD<VAR, VAL>, ValSet<VAL>> d : result.entrySet()) {
 
 				if (d.getKey() != SDD_FALSE) {
 					alpha.put((ValSet) d.getValue(), (DD) d.getKey());
@@ -186,7 +184,7 @@ public final class SDDImpl<Var, Val> extends DDImpl<Var, ValSet<Val>> implements
 				set = canonicity(new SDDImpl(variable, alpha));
 
 			} else {
-				set = getDDFalse();
+				set = getFalse();
 			}
 			set.setIgnoreThisDD(operand1.ignoreDD() & operand2.ignoreDD());
 		}
@@ -194,33 +192,33 @@ public final class SDDImpl<Var, Val> extends DDImpl<Var, ValSet<Val>> implements
 		return set;
 	}
 
-	private void union(Map<DD<Var, Val>, ValSet<Val>> result, Map<ValSet<Val>, DD<Var, ValSet<Val>>> alpha1,
-			Map<ValSet<Val>, DD<Var, ValSet<Val>>> alpha2) {
-		for (Map.Entry<ValSet<Val>, DD<Var, ValSet<Val>>> a : alpha1.entrySet()) {
-			result.put((DD<Var, Val>) a.getValue(), a.getKey());
+	private void union(Map<DD<VAR, VAL>, ValSet<VAL>> result, Map<ValSet<VAL>, DD<VAR, ValSet<VAL>>> alpha1,
+			Map<ValSet<VAL>, DD<VAR, ValSet<VAL>>> alpha2) {
+		for (Map.Entry<ValSet<VAL>, DD<VAR, ValSet<VAL>>> a : alpha1.entrySet()) {
+			result.put((DD<VAR, VAL>) a.getValue(), a.getKey());
 		}
 
-		Map<DD<Var, Val>, ValSet<Val>> sums = new HashMap<DD<Var, Val>, ValSet<Val>>();
-		Map<DD<Var, Val>, ValSet<Val>> rems = new HashMap<DD<Var, Val>, ValSet<Val>>();
+		Map<DD<VAR, VAL>, ValSet<VAL>> sums = new HashMap<DD<VAR, VAL>, ValSet<VAL>>();
+		Map<DD<VAR, VAL>, ValSet<VAL>> rems = new HashMap<DD<VAR, VAL>, ValSet<VAL>>();
 
-		List<DD<Var, Val>> toRemove = new ArrayList<DD<Var, Val>>();
+		List<DD<VAR, VAL>> toRemove = new ArrayList<DD<VAR, VAL>>();
 
-		for (Map.Entry<ValSet<Val>, DD<Var, ValSet<Val>>> aa : alpha2.entrySet()) {
-			ValSet<Val> a = aa.getKey();
-			DD<Var, Val> da = (DD<Var, Val>) aa.getValue();
-			ValSet<Val> remainOfA = aa.getKey();
+		for (Map.Entry<ValSet<VAL>, DD<VAR, ValSet<VAL>>> aa : alpha2.entrySet()) {
+			ValSet<VAL> a = aa.getKey();
+			DD<VAR, VAL> da = (DD<VAR, VAL>) aa.getValue();
+			ValSet<VAL> remainOfA = aa.getKey();
 
-			for (Map.Entry<DD<Var, Val>, ValSet<Val>> ddb : result.entrySet()) {
+			for (Map.Entry<DD<VAR, VAL>, ValSet<VAL>> ddb : result.entrySet()) {
 
-				ValSet<Val> b = ddb.getValue();
-				DD<Var, Val> db = ddb.getKey();
-				ValSet<Val> remainOfB = b;
+				ValSet<VAL> b = ddb.getValue();
+				DD<VAR, VAL> db = ddb.getKey();
+				ValSet<VAL> remainOfB = b;
 
-				ValSet<Val> aInterB = a.intersection(b);
+				ValSet<VAL> aInterB = a.intersection(b);
 				if (!aInterB.isEmpty()) {
 
-					DD<Var, Val> daUdb = (DD<Var, Val>) da.union(db);
-					ValSet<Val> oldInter = sums.get(daUdb);
+					DD<VAR, VAL> daUdb = (DD<VAR, VAL>) da.union(db);
+					ValSet<VAL> oldInter = sums.get(daUdb);
 					if (oldInter != null) {
 						sums.put(daUdb, aInterB.union(oldInter));
 					} else {
@@ -241,91 +239,91 @@ public final class SDDImpl<Var, Val> extends DDImpl<Var, ValSet<Val>> implements
 				rems.put(da, remainOfA);
 			}
 
-			for (DD<Var, Val> d : toRemove) {
+			for (DD<VAR, VAL> d : toRemove) {
 				result.remove(d);
 			}
 		}
 
-		for (Map.Entry<DD<Var, Val>, ValSet<Val>> dd : rems.entrySet()) {
+		for (Map.Entry<DD<VAR, VAL>, ValSet<VAL>> dd : rems.entrySet()) {
 			squareUnion(result, dd.getKey(), dd.getValue());
 		}
 
-		for (Map.Entry<DD<Var, Val>, ValSet<Val>> dd : sums.entrySet()) {
+		for (Map.Entry<DD<VAR, VAL>, ValSet<VAL>> dd : sums.entrySet()) {
 			squareUnion(result, dd.getKey(), dd.getValue());
 		}
 	}
 
-	private void inter(Map<DD<Var, Val>, ValSet<Val>> result, Map<ValSet<Val>, DD<Var, ValSet<Val>>> alpha1,
-			Map<ValSet<Val>, DD<Var, ValSet<Val>>> alpha2) {
-		for (Map.Entry<ValSet<Val>, DD<Var, ValSet<Val>>> aa : alpha1.entrySet()) {
-			DD<Var, Val> da = (DD<Var, Val>) aa.getValue();
-			ValSet<Val> a = aa.getKey();
+	private void inter(Map<DD<VAR, VAL>, ValSet<VAL>> result, Map<ValSet<VAL>, DD<VAR, ValSet<VAL>>> alpha1,
+			Map<ValSet<VAL>, DD<VAR, ValSet<VAL>>> alpha2) {
+		for (Map.Entry<ValSet<VAL>, DD<VAR, ValSet<VAL>>> aa : alpha1.entrySet()) {
+			DD<VAR, VAL> da = (DD<VAR, VAL>) aa.getValue();
+			ValSet<VAL> a = aa.getKey();
 
-			for (Map.Entry<ValSet<Val>, DD<Var, ValSet<Val>>> bb : alpha2.entrySet()) {
-				ValSet<Val> b = bb.getKey();
-				ValSet<Val> aInterB = a.intersection(b);
+			for (Map.Entry<ValSet<VAL>, DD<VAR, ValSet<VAL>>> bb : alpha2.entrySet()) {
+				ValSet<VAL> b = bb.getKey();
+				ValSet<VAL> aInterB = a.intersection(b);
 				if (!aInterB.isEmpty()) {
-					DD<Var, Val> db = (DD<Var, Val>) bb.getValue();
-					DD<Var, Val> daInterDb = (DD<Var, Val>) da.intersection(db);
+					DD<VAR, VAL> db = (DD<VAR, VAL>) bb.getValue();
+					DD<VAR, VAL> daInterDb = (DD<VAR, VAL>) da.intersection(db);
 					squareUnion(result, daInterDb, aInterB);
 				}
 			}
 		}
 	}
 
-	private void diff(Map<DD<Var, Val>, ValSet<Val>> result, Map<ValSet<Val>, DD<Var, ValSet<Val>>> alpha1,
-			Map<ValSet<Val>, DD<Var, ValSet<Val>>> alpha2) {
-		Map<DD<Var, Val>, ValSet<Val>> rems = new HashMap<DD<Var, Val>, ValSet<Val>>();
+	private void diff(Map<DD<VAR, VAL>, ValSet<VAL>> result, Map<ValSet<VAL>, DD<VAR, ValSet<VAL>>> alpha1,
+			Map<ValSet<VAL>, DD<VAR, ValSet<VAL>>> alpha2) {
+		Map<DD<VAR, VAL>, ValSet<VAL>> rems = new HashMap<DD<VAR, VAL>, ValSet<VAL>>();
 
-		for (Map.Entry<ValSet<Val>, DD<Var, ValSet<Val>>> aa : alpha1.entrySet()) {
-			rems.put((DD<Var, Val>) aa.getValue(), aa.getKey());
+		for (Map.Entry<ValSet<VAL>, DD<VAR, ValSet<VAL>>> aa : alpha1.entrySet()) {
+			rems.put((DD<VAR, VAL>) aa.getValue(), aa.getKey());
 		}
 
-		for (Map.Entry<ValSet<Val>, DD<Var, ValSet<Val>>> aa : alpha1.entrySet()) {
-			DD<Var, Val> da = (DD<Var, Val>) aa.getValue();
-			ValSet<Val> a = aa.getKey();
+		for (Map.Entry<ValSet<VAL>, DD<VAR, ValSet<VAL>>> aa : alpha1.entrySet()) {
+			DD<VAR, VAL> da = (DD<VAR, VAL>) aa.getValue();
+			ValSet<VAL> a = aa.getKey();
 
-			for (Map.Entry<ValSet<Val>, DD<Var, ValSet<Val>>> bb : alpha2.entrySet()) {
-				ValSet<Val> b = bb.getKey();
-				ValSet<Val> aInterB = a.intersection(b);
+			for (Map.Entry<ValSet<VAL>, DD<VAR, ValSet<VAL>>> bb : alpha2.entrySet()) {
+				ValSet<VAL> b = bb.getKey();
+				ValSet<VAL> aInterB = a.intersection(b);
 				if (!aInterB.isEmpty()) {
 
-					DD<Var, Val> db = (DD<Var, Val>) bb.getValue();
-					DD<Var, Val> daMinusDb = (DD<Var, Val>) da.difference(db);
+					DD<VAR, VAL> db = (DD<VAR, VAL>) bb.getValue();
+					DD<VAR, VAL> daMinusDb = (DD<VAR, VAL>) da.difference(db);
 					squareUnion(result, daMinusDb, aInterB);
 
-					ValSet<Val> restA = rems.get(da);
+					ValSet<VAL> restA = rems.get(da);
 					restA = restA.difference(aInterB);
 					rems.put(da, restA);
 				}
 			}
 		}
 
-		for (Map.Entry<DD<Var, Val>, ValSet<Val>> d : rems.entrySet()) {
-			ValSet<Val> values = d.getValue();
+		for (Map.Entry<DD<VAR, VAL>, ValSet<VAL>> d : rems.entrySet()) {
+			ValSet<VAL> values = d.getValue();
 			if (!values.isEmpty()) {
 				squareUnion(result, d.getKey(), values);
 			}
 		}
 	}
 
-	protected DD<Var, ValSet<Val>> eval(DDImpl.OP operation, DD<Var, ValSet<Val>> operand1,
-			DD<Var, ValSet<Val>> operand2) {
+	protected DD<VAR, ValSet<VAL>> eval(DDImpl.OP operation, DD<VAR, ValSet<VAL>> operand1,
+			DD<VAR, ValSet<VAL>> operand2) {
 		return super.eval(operation, operand1, operand2);
 	}
 
-	protected DD<Var, ValSet<Val>> copy(DD<Var, ValSet<Val>> tree) {
-		DD<Var, ValSet<Val>> tDD;
+	protected DD<VAR, ValSet<VAL>> copy(DD<VAR, ValSet<VAL>> tree) {
+		DD<VAR, ValSet<VAL>> tDD;
 
-		if (getDDTrue() == tree || getDDFalse() == tree || getDDAny() == tree) {
+		if (getTrue() == tree || getFalse() == tree || getAny() == tree) {
 
 			tDD = tree;
 		} else {
 
-			SDDImpl sDDImpl = new SDDImpl();
+			SDDImpl<VAR, VAL> sDDImpl = new SDDImpl();
 			sDDImpl.setVariable(tree.getVariable());
-			for (ValSet<Val> value : (Iterable<ValSet<Val>>) tree.getDomain()) {
-				DD<Var, ValSet<Val>> subtree = tree.getAlpha(value);
+			for (ValSet<VAL> value : (Iterable<ValSet<VAL>>) tree.getDomain()) {
+				DD<VAR, ValSet<VAL>> subtree = tree.getAlpha(value);
 				sDDImpl.addAlpha(value, subtree);
 			}
 			tDD = sDDImpl;
@@ -333,17 +331,17 @@ public final class SDDImpl<Var, Val> extends DDImpl<Var, ValSet<Val>> implements
 		return tDD;
 	}
 
-	private void squareUnion(Map<DD<Var, Val>, ValSet<Val>> reverseAlpha, DD<Var, Val> sdd, ValSet<Val> values) {
-		ValSet<Val> a = reverseAlpha.get(sdd);
+	private void squareUnion(Map<DD<VAR, VAL>, ValSet<VAL>> reverseAlpha, DD<VAR, VAL> sdd, ValSet<VAL> values) {
+		ValSet<VAL> a = reverseAlpha.get(sdd);
 		if (a != null) {
 			values = values.union(a);
 		}
 		reverseAlpha.put(sdd, values);
 	}
 
-	public List<DD<Var, Val>> split() {
+	public List<DD<VAR, VAL>> split() {
 		if (getStates() < 2.0D) {
-			List<SDDImpl<Var, Val>> l = new ArrayList<>();
+			List<SDDImpl<VAR, VAL>> l = new ArrayList<>();
 			l.add(this);
 			return (List) l;
 		}
@@ -358,26 +356,26 @@ public final class SDDImpl<Var, Val> extends DDImpl<Var, ValSet<Val>> implements
 		return (List) split;
 	}
 
-	private List<ValSet<Val>> split(ValSet<Val> valset2split) {
-		List<ValSet<Val>> valList = new ArrayList<ValSet<Val>>();
+	private List<ValSet<VAL>> split(ValSet<VAL> valset2split) {
+		List<ValSet<VAL>> valList = new ArrayList<ValSet<VAL>>();
 
 		if (valset2split instanceof SDDImpl) {
-			DD<Var, Val> sdd2split = (SDDImpl) valset2split;
-			Var variable = (Var) sdd2split.getVariable();
+			DD<VAR, VAL> sdd2split = (SDDImpl) valset2split;
+			VAR variable = (VAR) sdd2split.getVariable();
 
 			if (sdd2split == SDD_TRUE || sdd2split == SDD_FALSE || sdd2split == SDD_ANY) {
 
-				valList.add((ValSet) sdd2split);
+				valList.add(sdd2split);
 			} else {
 
-				for (Map.Entry entry : sdd2split.getAlpha().entrySet()) {
-					ValSet<Val> a = (ValSet) entry.getKey();
-					DD<Var, ValSet<Val>> d = (DD) entry.getValue();
+				for (Map.Entry<VAL, DD<VAR, VAL>> entry : sdd2split.getAlpha().entrySet()) {
+					VAL a = entry.getKey();
+					DD<VAR, VAL> d = entry.getValue();
 
-					List<ValSet<Val>> sons = split((ValSet) d);
-					for (ValSet<Val> son : sons) {
-						List<ValSet<Val>> vals = split(a);
-						for (ValSet<Val> val : vals) {
+					List<ValSet<VAL>> sons = split(d);
+					for (ValSet<VAL> son : sons) {
+						List<ValSet<VAL>> vals = split((ValSet) a);
+						for (ValSet<VAL> val : vals) {
 							valList.add((ValSet) create(variable, val, (SDDImpl) son));
 						}
 					}
@@ -385,7 +383,7 @@ public final class SDDImpl<Var, Val> extends DDImpl<Var, ValSet<Val>> implements
 			}
 		} else {
 
-			for (Val val : valset2split) {
+			for (VAL val : valset2split) {
 				valList.add(ObjSet.create(val));
 			}
 		}
@@ -399,16 +397,16 @@ public final class SDDImpl<Var, Val> extends DDImpl<Var, ValSet<Val>> implements
 
 	public String flatenizeRepresentation(String branchAsString) {
 		String lineSeparator = System.getProperty("line.separator");
-		if (this == getDDTrue())
+		if (this == getTrue())
 			return "[ " + branchAsString + "]" + lineSeparator;
-		if (this == getDDAny())
+		if (this == getAny())
 			return "[ " + branchAsString + " T ]" + lineSeparator;
-		if (this == getDDFalse()) {
+		if (this == getFalse()) {
 			return "[ " + branchAsString + " 0 ]" + lineSeparator;
 		}
 		String t = "";
-		for (ValSet<Val> val : (Iterable<ValSet<Val>>) getDomain()) {
-			SDDImpl<Var, Val> dd = (SDDImpl<Var, Val>) getAlpha(val);
+		for (ValSet<VAL> val : (Iterable<ValSet<VAL>>) getDomain()) {
+			SDDImpl<VAR, VAL> dd = (SDDImpl<VAR, VAL>) getAlpha(val);
 			if (val instanceof DD) {
 				t = t + dd.flatenizeRepresentation(
 						branchAsString + getVariable() + "(" + ((DDImpl) val).flatenizeRepresentation("") + ") ");
@@ -421,16 +419,17 @@ public final class SDDImpl<Var, Val> extends DDImpl<Var, ValSet<Val>> implements
 		return t;
 	}
 
-	public DD<Var, ValSet<Val>> getTop() {
-		return new SDDImpl((Var) getVariable());
+	public DD<VAR, ValSet<VAL>> getTop() {
+		return new SDDImpl((VAR) getVariable());
 	}
 
 	private static class AppendHom<Var, Val> extends SDDHomImpl<Var, Val> {
 		private AppendHom() {
 		}
 
+		@SuppressWarnings("unchecked")
 		protected DD<Var, ValSet<Val>> phi1(Object... parameters) {
-			return (DD) parameters[0];
+			return (DD<Var, ValSet<Val>>) parameters[0];
 		}
 
 		public int computeHashCode() {
@@ -445,39 +444,52 @@ public final class SDDImpl<Var, Val> extends DDImpl<Var, ValSet<Val>> implements
 		@Override
 		protected DD<Var, ValSet<Val>> phi(Var e, ValSet<Val> x, Map<ValSet<Val>, DD<Var, ValSet<Val>>> alpha,
 				Object... paramVarArgs) {
-			return (DD) SDDImpl.create(e, x, (DD) phi(alpha.get(x), (DD) paramVarArgs[0]));
+			return SDDImpl.create(e, x, phi(alpha.get(x), paramVarArgs[0]));
 		}
 	}
 
-	@Override
-	public DD<Var, ValSet<Val>> getDDTrue() {
-		return (DD) SDDImpl.SDD_TRUE;
+	@SuppressWarnings("unchecked")
+	public static <VAR, VAL> DD<VAR, ValSet<VAL>> getTrue(Class<VAR> varClass, Class<VAL> valClass) {
+		return (DD<VAR, ValSet<VAL>>) SDDImpl.SDD_TRUE;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <VAR, VAL> DD<VAR, ValSet<VAL>> getFalse(Class<VAR> varClass, Class<VAL> valClass) {
+		return (DD<VAR, ValSet<VAL>>) SDDImpl.SDD_FALSE;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <VAR, VAL> DD<VAR, ValSet<VAL>> getAny(Class<VAR> varClass, Class<VAL> valClass) {
+		return (DD<VAR, ValSet<VAL>>) SDDImpl.SDD_ANY;
+	}
+
+	@SuppressWarnings("unchecked")
+	public DD<VAR, ValSet<VAL>> getTrue() {
+		return (DD<VAR, ValSet<VAL>>) SDDImpl.SDD_TRUE;
+	}
+
+	@SuppressWarnings("unchecked")
+	public DD<VAR, ValSet<VAL>> getFalse() {
+		return (DD<VAR, ValSet<VAL>>) SDDImpl.SDD_FALSE;
+	}
+
+	@SuppressWarnings("unchecked")
+	public DD<VAR, ValSet<VAL>> getAny() {
+		return (DD<VAR, ValSet<VAL>>) SDDImpl.SDD_ANY;
 	}
 
 	@Override
-	public DD<Var, ValSet<Val>> getDDFalse() {
-		// TODO Auto-generated method stub
-		return (DD) SDDImpl.SDD_FALSE;
-	}
-
-	@Override
-	public DD<Var, ValSet<Val>> getDDAny() {
-		// TODO Auto-generated method stub
-		return (DD) SDDImpl.SDD_ANY;
-	}
-
-	@Override
-	public ValSet<ValSet<Val>> difference(ValSet<ValSet<Val>> paramTDataSet) {
+	public ValSet<ValSet<VAL>> difference(ValSet<ValSet<VAL>> paramTDataSet) {
 		return difference((DD) paramTDataSet, true);
 	}
 
 	@Override
-	public ValSet<ValSet<Val>> intersection(ValSet<ValSet<Val>> paramTDataSet) {
+	public ValSet<ValSet<VAL>> intersection(ValSet<ValSet<VAL>> paramTDataSet) {
 		return intersection((DD) paramTDataSet, true);
 	}
 
 	@Override
-	public ValSet<ValSet<Val>> union(ValSet<ValSet<Val>> paramTDataSet) {
+	public ValSet<ValSet<VAL>> union(ValSet<ValSet<VAL>> paramTDataSet) {
 		return union((DD) paramTDataSet, true);
 	}
 

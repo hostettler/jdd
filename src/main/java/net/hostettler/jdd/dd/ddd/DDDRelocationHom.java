@@ -4,33 +4,34 @@ import java.util.Map;
 
 import net.hostettler.jdd.dd.DD;
 
-public class DDDRelocationHom<Var, Val> extends DDDHomImpl<Var, Val> {
-	private Var mVar;
+public class DDDRelocationHom<VAR, VAL> extends DDDHomImpl<VAR, VAL> {
+	private VAR mVar;
 
-	public DDDRelocationHom(Var var) {
+	public DDDRelocationHom(VAR var) {
 		super(true);
 		this.mVar = var;
 	}
 
-	protected DD<Var, Val> phi(Var e, Val x, Map<Val, DD<Var, Val>> alpha, Object... parameters) {
+	protected DD<VAR, VAL> phi(VAR e, VAL x, Map<VAL, DD<VAR, VAL>> alpha, Object... parameters) {
 		if (this.mVar.equals(e)) {
 			return DDDImpl.create(e, x, id(alpha, x));
 		}
-		return (new DDDUp<Var, Val>(e, x)).phi( phi(id(alpha, x), parameters), parameters);
+		return (new DDDUp<VAR, VAL>(e, x)).phi( phi(id(alpha, x), parameters), parameters);
 	}
 
-	protected DD<?, ?> phi1(Object... parameters) {
-		return DDDImpl.DDD_ANY;
+	protected DD<VAR, VAL> phi1(Object... parameters) {
+		return this.getAny();
 	}
 
 	public int computeHashCode() {
 		return getClass().hashCode() * 4889 + this.mVar.hashCode() * 4153;
 	}
 
+	@SuppressWarnings("unchecked")
 	public boolean isEqual(Object that) {
 		boolean eq = (this == that);
 		if (!eq && that instanceof DDDRelocationHom) {
-			DDDRelocationHom thatReloc = (DDDRelocationHom) that;
+			DDDRelocationHom<VAR, VAL> thatReloc = (DDDRelocationHom<VAR, VAL>) that;
 			eq = this.mVar.equals(thatReloc.mVar);
 		}
 

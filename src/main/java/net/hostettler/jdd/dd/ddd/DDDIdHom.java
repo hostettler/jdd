@@ -4,16 +4,16 @@ import java.util.Map;
 
 import net.hostettler.jdd.dd.DD;
 
-public class DDDIdHom<Var, Val> extends DDDHomImpl<Var, Val> {
+public class DDDIdHom<VAR, VAL> extends DDDHomImpl<VAR, VAL> {
 	public DDDIdHom() {
 		super(false);
 	}
 
-	protected DD<Var, Val> phi(Var e, Val x, Map<Val, DD<Var, Val>> alpha, Object... parameters) {
-		return DDDImpl.create(e, x, (DD<Var, Val>) id(alpha, x));
+	protected DD<VAR, VAL> phi(VAR e, VAL x, Map<VAL, DD<VAR, VAL>> alpha, Object... parameters) {
+		return DDDImpl.create(e, x, (DD<VAR, VAL>) id(alpha, x));
 	}
 
-	public boolean isLocallyInvariant(DD<Var, Val> dd) {
+	public boolean isLocallyInvariant(DD<VAR, VAL> dd) {
 		return true;
 	}
 

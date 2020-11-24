@@ -79,7 +79,7 @@ public class TutorialPhilo {
 		}
 
 		protected DD<PLACE, Integer> phi1(Object... param1VarArgs) {
-			return getDDFalse();
+			return getFalse();
 		}
 
 		public int computeHashCode() {
@@ -109,13 +109,13 @@ public class TutorialPhilo {
 					? ((param1Integer.intValue() >= 1)
 							? DDDImpl.create(param1PLACE, Integer.valueOf(param1Integer.intValue() - 1),
 									(DD<TutorialPhilo.PLACE, Integer>) id(param1Map, param1Integer))
-							: (DD<TutorialPhilo.PLACE, Integer>) getDDFalse())
+							: (DD<TutorialPhilo.PLACE, Integer>) getFalse())
 					: DDDImpl.create(param1PLACE, param1Integer,
 							(DD<TutorialPhilo.PLACE, Integer>) phi(id(param1Map, param1Integer), new Object[0]));
 		}
 
 		protected DD<PLACE, Integer> phi1(Object... param1VarArgs) {
-			return  getDDFalse();
+			return  getFalse();
 		}
 
 		public int computeHashCode() {

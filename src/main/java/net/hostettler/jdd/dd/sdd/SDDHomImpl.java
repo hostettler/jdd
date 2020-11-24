@@ -7,7 +7,7 @@ import net.hostettler.jdd.dd.Hom;
 import net.hostettler.jdd.dd.HomImpl;
 import net.hostettler.jdd.dd.ValSet;
 
-public abstract class SDDHomImpl<Var, Val> extends HomImpl<Var, ValSet<Val>> implements Hom<Var, ValSet<Val>> {
+public abstract class SDDHomImpl<VAR, VAL> extends HomImpl<VAR, ValSet<VAL>> implements Hom<VAR, ValSet<VAL>> {
 	public SDDHomImpl(boolean activateCache) {
 		super(activateCache);
 	}
@@ -16,98 +16,105 @@ public abstract class SDDHomImpl<Var, Val> extends HomImpl<Var, ValSet<Val>> imp
 		super(true);
 	}
 
-	protected DD getDDAny() {
-		return SDDImpl.SDD_ANY;
+	@SuppressWarnings("unchecked")
+	protected DD<VAR, ValSet<VAL>> getAny() {
+		return (DD<VAR, ValSet<VAL>>) SDDImpl.SDD_ANY;
 	}
 
-	protected DD getDDFalse() {
-		return SDDImpl.SDD_FALSE;
+	@SuppressWarnings("unchecked")
+	protected DD<VAR, ValSet<VAL>> getFalse() {
+		return (DD<VAR, ValSet<VAL>>) SDDImpl.SDD_FALSE;
 	}
 
-	protected DD getDDTrue() {
-		return SDDImpl.SDD_TRUE;
+	@SuppressWarnings("unchecked")
+	protected DD<VAR, ValSet<VAL>> getTrue() {
+		return (DD<VAR, ValSet<VAL>>) SDDImpl.SDD_TRUE;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static <TVar, TVal> DD<TVar, TVal> getTrue(Class<TVar> varClass, Class<TVal> valClass) {
-		return (DD) SDDImpl.SDD_TRUE;
+		return (DD<TVar, TVal>) SDDImpl.SDD_TRUE;
 	}
+	@SuppressWarnings("unchecked")
 	public static <TVar, TVal> DD<TVar, TVal> getFalse(Class<TVar> varClass, Class<TVal> valClass) {
-		return (DD) SDDImpl.SDD_FALSE;
+		return (DD<TVar, TVal>) SDDImpl.SDD_FALSE;
 	}
+	@SuppressWarnings("unchecked")
 	public static <TVar, TVal> DD<TVar, TVal> getAny(Class<TVar> varClass, Class<TVal> valClass) {
-		return (DD) SDDImpl.SDD_ANY;
+		return (DD<TVar, TVal>) SDDImpl.SDD_ANY;
 	}
 	
 	
-	protected  DD<Var, ValSet<Val>> phiX(Var e, ValSet<Val> x, Map<ValSet<Val>,  DD<Var, ValSet<Val>> > alpha,
+	protected  DD<VAR, ValSet<VAL>> phiX(VAR e, ValSet<VAL> x, Map<ValSet<VAL>,  DD<VAR, ValSet<VAL>> > alpha,
 			Object... parameters) {
-		return phi(e, x, (Map) alpha, parameters);
+		return phi(e, x, alpha, parameters);
 	}
 
 
-	public Hom<Var, ValSet<Val>> compose(Hom<Var, ValSet<Val>>  subHom) {
+	public Hom<VAR, ValSet<VAL>> compose(Hom<VAR, ValSet<VAL>>  subHom) {
 		return compose(subHom, true);
 	}
 
-	public Hom<Var, ValSet<Val>> compose(Hom<Var, ValSet<Val>> subHom, boolean cache) {
+	public Hom<VAR, ValSet<VAL>> compose(Hom<VAR, ValSet<VAL>> subHom, boolean cache) {
 		return new ComposeHom(subHom, cache);
 	}
 
-	public Hom<Var, ValSet<Val>>  union(Hom<Var, ValSet<Val>> subHom) {
+	public Hom<VAR, ValSet<VAL>>  union(Hom<VAR, ValSet<VAL>> subHom) {
 		return union(subHom, true);
 	}
 
-	public Hom<Var, ValSet<Val>>  union(Hom<Var, ValSet<Val>> subHom, boolean cache) {
+	public Hom<VAR, ValSet<VAL>>  union(Hom<VAR, ValSet<VAL>> subHom, boolean cache) {
 		return new UnionHom(subHom, cache);
 	}
 
-	public Hom<Var, ValSet<Val>> fixpoint() {
+	public Hom<VAR, ValSet<VAL>> fixpoint() {
 		return fixpoint(true);
 	}
 
-	public Hom<Var, ValSet<Val>> fixpoint(boolean cache) {
+	public Hom<VAR, ValSet<VAL>> fixpoint(boolean cache) {
 		return new FixPointHom(cache);
 	}
 
-	public Hom<Var, ValSet<Val>> saturate() {
-		Hom<Var, ValSet<Val>> t = union(new SDDIdHom());
+	public Hom<VAR, ValSet<VAL>> saturate() {
+		Hom<VAR, ValSet<VAL>> t = union(new SDDIdHom<VAR, VAL>());
 		return t.fixpoint(true);
 	}
 
-	public Hom<Var, ValSet<Val>> saturate(boolean cache) {
-		 Hom<Var, ValSet<Val>>  t = union(new SDDIdHom());
+	public Hom<VAR, ValSet<VAL>> saturate(boolean cache) {
+		 Hom<VAR, ValSet<VAL>>  t = union(new SDDIdHom<VAR, VAL>());
 		return t.fixpoint(cache);
 	}
 
-	protected abstract DD<Var, ValSet<Val>> phi(Var var, ValSet<Val> values,
-			Map<ValSet<Val>, DD<Var, ValSet<Val>>> alpha, Object... parameters);
+	protected abstract DD<VAR, ValSet<VAL>> phi(VAR var, ValSet<VAL> values,
+			Map<ValSet<VAL>, DD<VAR, ValSet<VAL>>> alpha, Object... parameters);
 
-	private class ComposeHom extends SDDHomImpl<Var, Val> {
-		private SDDHomImpl<Var, Val> mHomOp1;
-		private SDDHomImpl<Var, Val> mHomOp2;
+	private class ComposeHom extends SDDHomImpl<VAR, VAL> {
+		private SDDHomImpl<VAR, VAL> mHomOp1;
+		private SDDHomImpl<VAR, VAL> mHomOp2;
 
-		public ComposeHom(Hom<Var, ValSet<Val>> subHom, boolean cache) {
+		public ComposeHom(Hom<VAR, ValSet<VAL>> subHom, boolean cache) {
 			super(cache);
-			this.mHomOp1 = (SDDHomImpl<Var, Val>) subHom;
+			this.mHomOp1 = (SDDHomImpl<VAR, VAL>) subHom;
 			this.mHomOp2 = SDDHomImpl.this;
 		}
 
-		protected DD<Var, ValSet<Val>> phi(Var e, ValSet<Val> x, Map<ValSet<Val>, DD<Var, ValSet<Val>>> alpha,
+		protected DD<VAR, ValSet<VAL>> phi(VAR e, ValSet<VAL> x, Map<ValSet<VAL>, DD<VAR, ValSet<VAL>>> alpha,
 				Object... parameters) {
-			DD<Var, ValSet<Val>> sdd = SDDImpl.create(e, (ValSet) x,  (DD) id(alpha, x));
+			DD<VAR, ValSet<VAL>> sdd = SDDImpl.create(e, x, id(alpha, x));
 			sdd = SDDHomImpl.this.phi(sdd, parameters);
-			if (sdd != getDDFalse()) {
+			if (sdd != getFalse()) {
 				sdd = this.mHomOp1.phi(sdd, parameters);
 			}
 			return sdd;
 		}
 
-		public boolean isLocallyInvariant(DD<Var, ValSet<Val>> dd) {
+		public boolean isLocallyInvariant(DD<VAR, ValSet<VAL>> dd) {
 			return this.mHomOp1.isLocallyInvariant(dd) & this.mHomOp2.isLocallyInvariant(dd);
 		}
 
-		protected DD<?, ?> phi1(Object... parameters) {
-			DD<Var, ValSet<Val>> sdd = (DD<Var, ValSet<Val>>) this.mHomOp2.phi1(parameters);
+		protected DD<VAR, ValSet<VAL>> phi1(Object... parameters) {
+			@SuppressWarnings("unchecked")
+			DD<VAR, ValSet<VAL>> sdd = (DD<VAR, ValSet<VAL>>) this.mHomOp2.phi1(parameters);
 			sdd = this.mHomOp1.phi(sdd, parameters);
 			return sdd;
 		}
@@ -116,6 +123,7 @@ public abstract class SDDHomImpl<Var, Val> extends HomImpl<Var, ValSet<Val>> imp
 			return getClass().hashCode() * 593 + this.mHomOp1.hashCode() * 5387 + this.mHomOp2.hashCode() * 2801;
 		}
 
+		@SuppressWarnings("unchecked")
 		protected boolean isEqual(Object that) {
 			boolean eq = (this == that);
 			if (!eq && that instanceof SDDHomImpl.ComposeHom) {
@@ -131,18 +139,18 @@ public abstract class SDDHomImpl<Var, Val> extends HomImpl<Var, ValSet<Val>> imp
 		}
 	}
 
-	private class UnionHom extends SDDHomImpl<Var, Val> {
-		private SDDHomImpl<Var, Val> mHomOp1;
+	private class UnionHom extends SDDHomImpl<VAR, VAL> {
+		private SDDHomImpl<VAR, VAL> mHomOp1;
 
-		private SDDHomImpl<Var, Val> mHomOp2;
+		private SDDHomImpl<VAR, VAL> mHomOp2;
 
 		private boolean mHom1isId;
 
 		private boolean mHom2isId;
 
-		public UnionHom(Hom<Var, ValSet<Val>> subHom, boolean cache) {
+		public UnionHom(Hom<VAR, ValSet<VAL>> subHom, boolean cache) {
 			super(cache);
-			this.mHomOp1 = (SDDHomImpl<Var, Val>) subHom;
+			this.mHomOp1 = (SDDHomImpl<VAR, VAL>) subHom;
 			this.mHomOp2 = SDDHomImpl.this;
 			if (this.mHomOp1 instanceof SDDIdHom) {
 				this.mHom1isId = true;
@@ -151,11 +159,11 @@ public abstract class SDDHomImpl<Var, Val> extends HomImpl<Var, ValSet<Val>> imp
 			}
 		}
 
-		protected DD<Var, ValSet<Val>> phi(Var e, ValSet<Val> x, Map<ValSet<Val>, DD<Var, ValSet<Val>>> alpha,
+		protected DD<VAR, ValSet<VAL>> phi(VAR e, ValSet<VAL> x, Map<ValSet<VAL>, DD<VAR, ValSet<VAL>>> alpha,
 				Object... parameters) {
-			DD<Var, ValSet<Val>> sdd = SDDImpl.create(e, x, (DD) id(alpha, x));
+			DD<VAR, ValSet<VAL>> sdd = SDDImpl.create(e, x, id(alpha, x));
 			if (this.mHom1isId || this.mHom2isId) {
-				DD<Var, ValSet<Val>> sDD1, sDD2;
+				DD<VAR, ValSet<VAL>> sDD1, sDD2;
 				if (this.mHom1isId) {
 					sDD1 = sdd;
 				} else {
@@ -166,23 +174,23 @@ public abstract class SDDHomImpl<Var, Val> extends HomImpl<Var, ValSet<Val>> imp
 				} else {
 					sDD2 = this.mHomOp2.phi(sdd, parameters);
 				}
-				sdd = (DD<Var, ValSet<Val>>) sDD1.union(sDD2);
+				sdd = (DD<VAR, ValSet<VAL>>) sDD1.union(sDD2);
 				return sdd;
 			}
-			DD<Var, ValSet<Val>> d1 = this.mHomOp1.phi(sdd, parameters);
-			DD<Var, ValSet<Val>> d2 = this.mHomOp2.phi(sdd, parameters);
+			DD<VAR, ValSet<VAL>> d1 = this.mHomOp1.phi(sdd, parameters);
+			DD<VAR, ValSet<VAL>> d2 = this.mHomOp2.phi(sdd, parameters);
 			sdd = d1.union(d2);
 
 			return sdd;
 		}
 
-		protected DD<?, ?> phi1(Object... parameters) {
-			DD<Var, ValSet<Val>> d1 = (DD<Var, ValSet<Val>>) this.mHomOp1.phi1(parameters);
-			DD<Var, ValSet<Val>> d2 = (DD<Var, ValSet<Val>>) this.mHomOp2.phi1(parameters);
+		protected DD<VAR, ValSet<VAL>> phi1(Object... parameters) {
+			DD<VAR, ValSet<VAL>> d1 = (DD<VAR, ValSet<VAL>>) this.mHomOp1.phi1(parameters);
+			DD<VAR, ValSet<VAL>> d2 = (DD<VAR, ValSet<VAL>>) this.mHomOp2.phi1(parameters);
 			return d1.union(d2);
 		}
 
-		public boolean isLocallyInvariant(DD<Var, ValSet<Val>> dd) {
+		public boolean isLocallyInvariant(DD<VAR, ValSet<VAL>> dd) {
 			return this.mHomOp1.isLocallyInvariant(dd) & this.mHomOp2.isLocallyInvariant(dd);
 		}
 
@@ -205,18 +213,18 @@ public abstract class SDDHomImpl<Var, Val> extends HomImpl<Var, ValSet<Val>> imp
 		}
 	}
 
-	private class FixPointHom extends SDDHomImpl<Var, Val> {
-		private Hom<Var, ValSet<Val>> mHom;
+	private class FixPointHom extends SDDHomImpl<VAR, VAL> {
+		private Hom<VAR, ValSet<VAL>> mHom;
 
 		public FixPointHom(boolean cache) {
 			super(cache);
 			this.mHom = SDDHomImpl.this;
 		}
 
-		protected DD<Var, ValSet<Val>> phi(Var e, ValSet<Val> x, Map<ValSet<Val>, DD<Var, ValSet<Val>>> alpha,
+		protected DD<VAR, ValSet<VAL>> phi(VAR e, ValSet<VAL> x, Map<ValSet<VAL>, DD<VAR, ValSet<VAL>>> alpha,
 				Object... parameters) {
-			DD<Var, ValSet<Val>> oldSDD = null;
-			DD<Var, ValSet<Val>> newSDD = SDDImpl.create(e, (DD) x, (DD) id(alpha, x));
+			DD<VAR, ValSet<VAL>> oldSDD = null;
+			DD<VAR, ValSet<VAL>> newSDD = SDDImpl.create(e,  x,  id(alpha, x));
 
 			do {
 				oldSDD = newSDD;
@@ -226,12 +234,12 @@ public abstract class SDDHomImpl<Var, Val> extends HomImpl<Var, ValSet<Val>> imp
 			return newSDD;
 		}
 
-		public boolean isLocallyInvariant(DD<Var, ValSet<Val>> dd) {
+		public boolean isLocallyInvariant(DD<VAR, ValSet<VAL>> dd) {
 			return SDDHomImpl.this.isLocallyInvariant(dd);
 		}
 
-		protected DD<?, ?> phi1(Object... parameters) {
-			return this.mHom.phi((DD) SDDImpl.SDD_TRUE, parameters);
+		protected DD<VAR, ValSet<VAL>>phi1(Object... parameters) {
+			return this.mHom.phi(this.getTrue(), parameters);
 		}
 
 		protected int computeHashCode() {

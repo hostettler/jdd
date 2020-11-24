@@ -6,23 +6,23 @@ import net.hostettler.jdd.dd.DD;
 import net.hostettler.jdd.dd.Hom;
 import net.hostettler.jdd.dd.ValSet;
 
-public class SDDIdHom<Var, Val> extends SDDHomImpl<Var, Val> implements Hom<Var, ValSet<Val>>{
+public class SDDIdHom<VAR, VAL> extends SDDHomImpl<VAR, VAL> implements Hom<VAR, ValSet<VAL>>{
 	
 	public SDDIdHom() {
 		super(false);
 	}
 
-	protected DD<Var, ValSet<Val>> phi(Var e, ValSet<Val> x, Map<ValSet<Val>, DD<Var, ValSet<Val>>> alpha,
+	protected DD<VAR, ValSet<VAL>> phi(VAR e, ValSet<VAL> x, Map<ValSet<VAL>, DD<VAR, ValSet<VAL>>> alpha,
 			Object... parameters) {
 		return SDDImpl.create(e, x, (DD) id(alpha, x));
 	}
 
-	public boolean isLocallyInvariant(DD<Var, ValSet<Val>> dd) {
+	public boolean isLocallyInvariant(DD<VAR, ValSet<VAL>> dd) {
 		return true;
 	}
 	
-	protected DD<?, ?> phi1(Object... parameters) {
-		return SDDImpl.SDD_TRUE;
+	protected DD<VAR, ValSet<VAL>> phi1(Object... parameters) {
+		return this.getTrue();
 	}
 
 	public String toString() {

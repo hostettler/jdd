@@ -5,21 +5,21 @@ import java.util.Map;
 
 import net.hostettler.jdd.dd.DD;
 
-public class DDDSequenceCollector<Var, Val> extends DDDHomImpl<Var, Val> {
-	private Evaluator<Var, Val> mEvaluator;
+public class DDDSequenceCollector<VAR, VAL> extends DDDHomImpl<VAR, VAL> {
+	private Evaluator<VAR, VAL> mEvaluator;
 
-	public DDDSequenceCollector(Evaluator<Var, Val> evaluator) {
+	public DDDSequenceCollector(Evaluator<VAR, VAL> evaluator) {
 		super(false);
 		this.mEvaluator = evaluator;
 	}
 
-	protected DD<Var, Val> phi(Var e, Val x, Map<Val, DD<Var, Val>> alpha, Object... parameters) {
-		Map<Var, Val> values = getValues(parameters);
+	protected DD<VAR, VAL> phi(VAR e, VAL x, Map<VAL, DD<VAR, VAL>> alpha, Object... parameters) {
+		Map<VAR, VAL> values = getValues(parameters);
 		values.put(e, x);
 		return DDDImpl.create(e, x,  phi(id(alpha, x), new Object[] { values }));
 	}
 
-	protected DD<?, ?> phi1(Object... parameters) {
+	protected DD<VAR, VAL> phi1(Object... parameters) {
 		return this.mEvaluator.evaluate(getValues(parameters));
 	}
 
@@ -27,21 +27,22 @@ public class DDDSequenceCollector<Var, Val> extends DDDHomImpl<Var, Val> {
 		return getClass().hashCode() * 2357 + this.mEvaluator.hashCode() * 1733;
 	}
 
+	@SuppressWarnings("unchecked")
 	protected boolean isEqual(Object that) {
 		boolean eq = (this == that);
 		if (!eq && that instanceof DDDSequenceCollector) {
-			DDDSequenceCollector thatMove = (DDDSequenceCollector) that;
+			DDDSequenceCollector<VAR, VAL> thatMove = (DDDSequenceCollector<VAR, VAL>) that;
 			eq = this.mEvaluator.equals(thatMove.mEvaluator);
 		}
 		return eq;
 	}
 
-	private Map<Var, Val> getValues(Object... parameters) {
-		Map<Var, Val> values = null;
+	private Map<VAR, VAL> getValues(Object... parameters) {
+		Map<VAR, VAL> values = null;
 		if (parameters.length == 1 && parameters[0] != null) {
-			values = (Map<Var, Val>) parameters[0];
+			values = (Map<VAR, VAL>) parameters[0];
 		} else {
-			values = new HashMap<Var, Val>();
+			values = new HashMap<VAR, VAL>();
 		}
 		return values;
 	}

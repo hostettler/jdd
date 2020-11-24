@@ -3,10 +3,10 @@ package net.hostettler.jdd.dd.ddd;
 import net.hostettler.jdd.dd.DD;
 import net.hostettler.jdd.dd.Hom;
 
-public  abstract class SimplePropagationDDDHomImpl<Var, Val> extends DDDHomImpl<Var, Val> implements Hom<Var, Val> {
+public  abstract class SimplePropagationDDDHomImpl<VAR, VAL> extends DDDHomImpl<VAR, VAL> implements Hom<VAR, VAL> {
 	
-	protected DD<?, ?> phi1(Object... param1VarArgs) {
-		return DDDImpl.DDD_TRUE;
+	protected DD<VAR, VAL> phi1(Object... param1VarArgs) {
+		return this.getTrue();
 	}
 
 	public int computeHashCode() {

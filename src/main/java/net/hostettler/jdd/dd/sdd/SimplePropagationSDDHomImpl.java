@@ -1,12 +1,12 @@
 package net.hostettler.jdd.dd.sdd;
 
 import net.hostettler.jdd.dd.DD;
-import net.hostettler.jdd.dd.Hom;
+import net.hostettler.jdd.dd.ValSet;
 
-public  abstract class SimplePropagationSDDHomImpl<Var, Val> extends SDDHomImpl<Var, Val> {
+public  abstract class SimplePropagationSDDHomImpl<VAR, VAL> extends SDDHomImpl<VAR, VAL> {
 	
-	protected DD<?, ?> phi1(Object... param1VarArgs) {
-		return SDDImpl.SDD_TRUE;
+	protected DD<VAR, ValSet<VAL>> phi1(Object... param1VarArgs) {
+		return this.getTrue();
 	}
 
 	public int computeHashCode() {

@@ -1,17 +1,17 @@
 package net.hostettler.jdd.dd;
 
-public interface Hom<Var, Val> {
-	DD<Var, Val> phi(DD<Var, Val> paramTDD, Object... paramVarArgs);
+public interface Hom<VAR, VAL> {
+	DD<VAR, VAL> phi(DD<VAR, VAL> operand, Object... parameters);
 
-	Hom<Var, Val> compose(Hom<Var, Val> paramTHom);
-	Hom<Var, Val> compose(Hom<Var, Val> paramTHom, boolean paramBoolean);
-	Hom<Var, Val> union(Hom<Var, Val> paramTHom);
-	Hom<Var, Val> union(Hom<Var, Val> paramTHom, boolean paramBoolean);
+	Hom<VAR, VAL> compose(Hom<VAR, VAL> operand);
+	Hom<VAR, VAL> compose(Hom<VAR, VAL> operand, boolean isCached);
+	Hom<VAR, VAL> union(Hom<VAR, VAL> operand);
+	Hom<VAR, VAL> union(Hom<VAR, VAL> operand, boolean isCached);
 	
-	Hom<Var, Val> fixpoint();
-	Hom<Var, Val> fixpoint(boolean paramBoolean);
-	Hom<Var, Val> saturate();
-	Hom<Var, Val> saturate(boolean paramBoolean);
+	Hom<VAR, VAL> fixpoint();
+	Hom<VAR, VAL> fixpoint(boolean isCached);
+	Hom<VAR, VAL> saturate();
+	Hom<VAR, VAL> saturate(boolean isCached);
 
-	boolean isLocallyInvariant(DD<Var, Val> paramDD);
+	boolean isLocallyInvariant(DD<VAR, VAL> operand);
 }

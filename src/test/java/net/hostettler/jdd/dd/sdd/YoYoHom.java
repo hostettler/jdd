@@ -9,8 +9,6 @@ import net.hostettler.jdd.dd.DD;
 import net.hostettler.jdd.dd.Hom;
 import net.hostettler.jdd.dd.ValSet;
 import net.hostettler.jdd.dd.ddd.DDDImpl;
-import net.hostettler.jdd.dd.sdd.SDDHomImpl;
-import net.hostettler.jdd.dd.sdd.SDDImpl;
 
 public class YoYoHom<SDDTVar, SDDTVal, DDDTVar, DDDTVal> extends SDDHomImpl<SDDTVar, SDDTVal> {
 	private Set<SDDTVar> mNode2Exec;
@@ -45,7 +43,7 @@ public class YoYoHom<SDDTVar, SDDTVal, DDDTVar, DDDTVal> extends SDDHomImpl<SDDT
 		}
 
 		if (state == DDDImpl.DDD_FALSE) {
-			return (DD) SDDImpl.SDD_FALSE;
+			return getFalse();
 		}
 
 		if (params.size() > 0) {
@@ -60,8 +58,8 @@ public class YoYoHom<SDDTVar, SDDTVal, DDDTVar, DDDTVal> extends SDDHomImpl<SDDT
 		return (this.mNode2Exec.size() != 0 && !this.mNode2Exec.contains(dd.getVariable()));
 	}
 
-	protected DD<?, ?>  phi1(Object... parameters) {
-		return SDDImpl.SDD_ANY;
+	protected DD<SDDTVar, ValSet<SDDTVal>> phi1(Object... parameters) {
+		return this.getAny();
 	}
 
 	protected boolean isEqual(Object that) {

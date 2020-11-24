@@ -10,9 +10,6 @@ import org.junit.Test;
 import net.hostettler.jdd.dd.DD;
 import net.hostettler.jdd.dd.Hom;
 import net.hostettler.jdd.dd.HomImpl;
-import net.hostettler.jdd.dd.ddd.DDDHomImpl;
-import net.hostettler.jdd.dd.ddd.DDDIdHom;
-import net.hostettler.jdd.dd.ddd.DDDImpl;
 
 public class DDDHanoiTest {
 	public static final int NB_RINGS = 10;
@@ -28,7 +25,7 @@ public class DDDHanoiTest {
 			arrayList.add(new Ring(b, b));
 		for (b = 0; b < 3; b++)
 			arrayList1.add(new Pole(b));
-		DD<Ring, Pole> dDD = (DD) DDDImpl.DDD_TRUE;
+		DD<Ring, Pole> dDD = DDDImpl.getTrue(Ring.class, Pole.class);
 		for (int i = arrayList.size(); i > 0; i--)
 			dDD = (DD<Ring, Pole>) dDD.append( DDDImpl.create(arrayList.get(i - 1), arrayList1.get(0)));
 		System.out.println(dDD);
@@ -74,14 +71,14 @@ public class DDDHanoiTest {
 			return !param1Ring.equals(this.mRing)
 					? DDDImpl.create(param1Ring, param1Pole,
 							(DD<DDDHanoiTest.Ring, DDDHanoiTest.Pole>) phi(id(param1Map, param1Pole), new Object[0]))
-					: (!param1Pole.equals(this.mOrigin) ? (DD<DDDHanoiTest.Ring, DDDHanoiTest.Pole>) getDDFalse()
+					: (!param1Pole.equals(this.mOrigin) ? (DD<DDDHanoiTest.Ring, DDDHanoiTest.Pole>) getFalse()
 							: DDDImpl.create(param1Ring, this.mDestination,
 									(DD<DDDHanoiTest.Ring, DDDHanoiTest.Pole>) this.mValidMove
 											.phi(id(param1Map, param1Pole), new Object[0])));
 		}
 
 		protected DD<DDDHanoiTest.Ring, DDDHanoiTest.Pole> phi1(Object... param1VarArgs) {
-			return getDDTrue();
+			return getTrue();
 		}
 
 		public String toString() {
@@ -122,14 +119,14 @@ public class DDDHanoiTest {
 				Map<DDDHanoiTest.Pole, DD<DDDHanoiTest.Ring, DDDHanoiTest.Pole>> param1Map, Object... param1VarArgs) {
 			return ((param1Pole.equals(this.mOrigin) && !this.mRing.isSmallerThan(param1Ring))
 					|| (param1Pole.equals(this.mDestination) && this.mRing.isSmallerThan(param1Ring)))
-							? (DD<DDDHanoiTest.Ring, DDDHanoiTest.Pole>) getDDFalse()
+							? (DD<DDDHanoiTest.Ring, DDDHanoiTest.Pole>) getFalse()
 							: DDDImpl.create(param1Ring, param1Pole,
 									(DD<DDDHanoiTest.Ring, DDDHanoiTest.Pole>) phi(id(param1Map, param1Pole),
 											new Object[0]));
 		}
 
 		protected DD<DDDHanoiTest.Ring, DDDHanoiTest.Pole> phi1(Object... param1VarArgs) {
-			return  getDDTrue();
+			return  getTrue();
 		}
 
 		public int computeHashCode() {

@@ -51,7 +51,12 @@ public final class ObjSet<T> implements ValSet<T>, Iterable<T> {
 	}
 
 	public static <T> ObjSet<T> create(T value) {
-		ObjSet<T> set = new ObjSet<T>(value);
+		ObjSet<T> set;
+		if (value == null) {
+			set = createEmtpy();
+		} else {
+			 set = new ObjSet<T>(value);
+		}
 		set = canonical(set);
 		return set;
 	}
@@ -62,7 +67,7 @@ public final class ObjSet<T> implements ValSet<T>, Iterable<T> {
 
 	public boolean equals(Object that) {
 		boolean eq = (this == that);
-		if (!eq && hashCode() == that.hashCode() && that instanceof ObjSet) {
+		if (!eq && that!=null && hashCode() == that.hashCode() && that instanceof ObjSet) {
 			ObjSet<T> thatSet = (ObjSet<T>) that;
 			if (this.mValues.size() == thatSet.mValues.size()) {
 				eq = true;

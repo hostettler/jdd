@@ -6,32 +6,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public interface DD<Var, Val> extends ValSet<Val> {
-	DD<Var, Val> getDDTrue();
-	DD<Var, Val> getDDFalse();
-	DD<Var, Val> getDDAny();
+public interface DD<VAR, VAL> extends ValSet<VAL> {
+	DD<VAR, VAL> getTrue();
+	DD<VAR, VAL> getFalse();
+	DD<VAR, VAL> getAny();
 
-	Var getVariable();
-	void setVariable(Var paramVar);
+	VAR getVariable();
+	void setVariable(VAR variable);
 
-	Set<Val> getDomain();
+	Set<VAL> getDomain();
 
-	void addAlpha(Val paramVal, DD<Var, Val> paramTDD);
-	Val getAlpha(int paramInt);
-	Map<Val, DD<Var, Val>> getAlpha();
-	DD<Var, Val> getAlpha(Val paramVal);
+	void addAlpha(VAL paramVal, DD<VAR, VAL> dd);
+	VAL getAlpha(int paramInt);
+	Map<VAL, DD<VAR, VAL>> getAlpha();
+	DD<VAR, VAL> getAlpha(VAL value);
 
-	DD<Var, Val> union(DD<Var, Val> paramTDD);
-	DD<Var, Val> union(DD<Var, Val> paramTDD, boolean paramBoolean);
-	DD<Var, Val> difference(DD<Var, Val> paramTDD);
-	DD<Var, Val> difference(DD<Var, Val> paramTDD, boolean paramBoolean);
-	DD<Var, Val> intersection(DD<Var, Val> paramTDD);
-	DD<Var, Val> intersection(DD<Var, Val> paramTDD, boolean paramBoolean);
-	DD<Var, Val> append(DD<Var, Val> paramTDD);
+	DD<VAR, VAL> union(DD<VAR, VAL> operand);
+	DD<VAR, VAL> union(DD<VAR, VAL> operand, boolean isCached);
+	DD<VAR, VAL> difference(DD<VAR, VAL> operand);
+	DD<VAR, VAL> difference(DD<VAR, VAL> operand, boolean isCached);
+	DD<VAR, VAL> intersection(DD<VAR, VAL> operand);
+	DD<VAR, VAL> intersection(DD<VAR, VAL> operand, boolean isCached);
+	DD<VAR, VAL> append(DD<VAR, VAL> operand);
 
 	double getStates();
 	void printInLibDDDStyle(OutputStream paramOutputStream) throws IOException;
-	DD<Var, Val> getTop();
+	DD<VAR, VAL> getTop();
 	boolean ignoreDD();
 	void setIgnoreThisDD(boolean paramBoolean);
 	String[] getProperties();

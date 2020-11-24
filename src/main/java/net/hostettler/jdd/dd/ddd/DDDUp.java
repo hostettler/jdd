@@ -4,22 +4,22 @@ import java.util.Map;
 
 import net.hostettler.jdd.dd.DD;
 
-public class DDDUp<Var, Val> extends DDDHomImpl<Var, Val> {
-	private Var mVar;
-	private Val mVal;
+public class DDDUp<VAR, VAL> extends DDDHomImpl<VAR, VAL> {
+	private VAR mVar;
+	private VAL mVal;
 
-	public DDDUp(Var var, Val val) {
+	public DDDUp(VAR var, VAL val) {
 		super(true);
 		this.mVar = var;
 		this.mVal = val;
 	}
 
-	protected DD<Var, Val> phi(Var e, Val x, Map<Val, DD<Var, Val>> alpha, Object... parameters) {
+	protected DD<VAR, VAL> phi(VAR e, VAL x, Map<VAL, DD<VAR, VAL>> alpha, Object... parameters) {
 		return DDDImpl.create(e, x, DDDImpl.create(this.mVar, this.mVal, id(alpha, x)));
 	}
 
-	protected DD<?, ?> phi1(Object... parameters) {
-		return DDDImpl.DDD_ANY;
+	protected DD<VAR, VAL> phi1(Object... parameters) {
+		return this.getAny();
 	}
 
 	public int computeHashCode() {
@@ -29,7 +29,7 @@ public class DDDUp<Var, Val> extends DDDHomImpl<Var, Val> {
 	public boolean isEqual(Object that) {
 		boolean eq = (this == that);
 		if (!eq && that instanceof DDDUp) {
-			DDDUp thatUp = (DDDUp) that;
+			DDDUp<VAR, VAL> thatUp = (DDDUp<VAR, VAL>) that;
 			eq = (this.mVar.equals(thatUp.mVar) && this.mVal.equals(thatUp.mVal));
 		}
 

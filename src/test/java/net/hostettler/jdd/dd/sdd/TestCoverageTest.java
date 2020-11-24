@@ -95,8 +95,8 @@ public class TestCoverageTest {
 			return SDDImpl.create(var, newValues, phi(id(alpha, values)));
 		}
 
-		protected DD<?, ?> phi1(Object... param1VarArgs) {
-			return SDDImpl.SDD_TRUE;
+		protected DD<String, ValSet<Object>> phi1(Object... param1VarArgs) {
+			return this.getTrue();
 		}
 
 		@Override

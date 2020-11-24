@@ -13,23 +13,28 @@ import net.hostettler.jdd.dd.Hom;
 import net.hostettler.jdd.dd.Terminator;
 import net.hostettler.jdd.dd.ValSet;
 
-public final class DDDImpl<Var, Val> extends DDImpl<Var, Val> implements DD<Var, Val> {
+public final class DDDImpl<VAR, VAL> extends DDImpl<VAR, VAL> implements DD<VAR, VAL> {
 	private static Map<DD<? extends Object, ? extends Object>, List<DD<?, ?>>> mSplitCache = new HashMap<>();
 
 	private static final int MIN_CACHE_SPLIT_THRESHOLD = 50;
 
-	private static AppendHom mAppendHom = new AppendHom<Object, Object>();
+	private static AppendHom<?, ?> mAppendHom = new AppendHom<>();
 
-	private DDDImpl(Var variable) {
+	private DDDImpl(VAR variable) {
 		super(variable);
 	}
 
-	private DDDImpl(Var variable, double nbStates) {
+	private DDDImpl(VAR variable, double nbStates) {
 		super(variable, nbStates);
 	}
 
-	private DDDImpl(Var variable, Val value, DD<Var, Val> sdd) {
-		super(variable, value, sdd);
+	private DDDImpl(VAR variable, VAL value, DD<VAR, VAL> ddd) {
+		super(variable, value, ddd);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private DDDImpl(VAR variable, VAL value) {
+		super(variable, value, (DD<VAR, VAL>) DDD_TRUE);
 	}
 
 	private DDDImpl() {
@@ -44,12 +49,13 @@ public final class DDDImpl<Var, Val> extends DDImpl<Var, Val> implements DD<Var,
 	}
 
 	public static <Var, Val> DD<Var, Val> create(Var variable, Val value) {
-		DD<Var, Val> newDDD = new DDDImpl<Var, Val>(variable, value, (DD) DDD_TRUE);
+		DD<Var, Val> newDDD = new DDDImpl<Var, Val>(variable, value);
 		return (DD<Var, Val>) canonicity(newDDD);
 	}
 
-	protected DD<Var, Val> append(DD<Var, Val> operand1, DD<Var, Val> operand2) {
-		return mAppendHom.phi(operand1, new Object[] { operand2 });
+	@SuppressWarnings("unchecked")
+	protected DD<VAR, VAL> append(DD<VAR, VAL> operand1, DD<VAR, VAL> operand2) {
+		return mAppendHom.phi((DD)operand1, operand2);
 	}
 
 	private static class AppendHom<Variable, Value> extends DDDHomImpl<Variable, Value> {
@@ -61,8 +67,8 @@ public final class DDDImpl<Var, Val> extends DDImpl<Var, Val> implements DD<Var,
 			return DDDImpl.create(e, x, phi(alpha.get(x), parameters));
 		}
 
-		protected DD<?, ?> phi1(Object... parameters) {
-			return (DD<?, ?>) parameters[0];
+		protected DD<Variable, Value> phi1(Object... parameters) {
+			return (DD<Variable, Value>) parameters[0];
 		}
 
 		public int computeHashCode() {
@@ -75,8 +81,8 @@ public final class DDDImpl<Var, Val> extends DDImpl<Var, Val> implements DD<Var,
 		}
 	}
 
-	protected DD<Var, Val> setOperation(DDImpl.OP[][] operation, DD<Var, Val> operand1, DD<Var, Val> operand2) {
-		DD dD;
+	protected DD<VAR, VAL> setOperation(DDImpl.OP[][] operation, DD<VAR, VAL> operand1, DD<VAR, VAL> operand2) {
+		DD<VAR, VAL> dD;
 		if (operand1 == operand2) {
 			switch (operation[3][3]) {
 
@@ -87,12 +93,12 @@ public final class DDDImpl<Var, Val> extends DDImpl<Var, Val> implements DD<Var,
 				return operand1;
 
 			case RET_FIRST_OP:
-				return (DD<Var, Val>) DDD_FALSE;
+				return getFalse();
+			default:
+				break;
 			}
 			throw new IllegalArgumentException();
 		}
-
-		DD<Var, Val> set = null;
 
 		if (DDD_FALSE == operand1) {
 			if (DDD_FALSE == operand2) {
@@ -137,8 +143,8 @@ public final class DDDImpl<Var, Val> extends DDImpl<Var, Val> implements DD<Var,
 			dD = eval(operation[3][2], operand1, operand2);
 		} else {
 
-			DDDImpl<Var, Val> op1 = (DDDImpl<Var, Val>) operand1;
-			DDDImpl<Var, Val> op2 = (DDDImpl<Var, Val>) operand2;
+			DDDImpl<VAR, VAL> op1 = (DDDImpl<VAR, VAL>) operand1;
+			DDDImpl<VAR, VAL> op2 = (DDDImpl<VAR, VAL>) operand2;
 
 			if (!op1.getVariable().equals(op2.getVariable())) {
 
@@ -146,25 +152,25 @@ public final class DDDImpl<Var, Val> extends DDImpl<Var, Val> implements DD<Var,
 
 			} else {
 
-				Set<Val> domain = new HashSet<Val>(op1.getAlpha().keySet());
+				Set<VAL> domain = new HashSet<VAL>(op1.getAlpha().keySet());
 
 				domain.addAll(op2.getAlpha().keySet());
 				dD = new DDDImpl<>();
 				dD.setVariable(op1.getVariable());
 
 				boolean falseSubTree = true;
-				for (Val value : domain) {
+				for (VAL value : domain) {
 
-					DD<Var, Val> target = setOperationWithCache(operation, operand1.getAlpha(value),
+					DD<VAR, VAL> target = setOperationWithCache(operation, operand1.getAlpha(value),
 							operand2.getAlpha(value));
 
-					if (target != DDD_FALSE) {
+					if (target != getFalse()) {
 						falseSubTree = false;
 						dD.addAlpha(value, target);
 					}
 				}
 				if (falseSubTree) {
-					dD = DDD_FALSE;
+					dD = getFalse();
 				}
 			}
 		}
@@ -172,16 +178,16 @@ public final class DDDImpl<Var, Val> extends DDImpl<Var, Val> implements DD<Var,
 		return canonicity(dD);
 	}
 
-	protected DD<Var, Val> copy(DD<Var, Val> tree) {
-		DD<Var, Val> tDD = null;
+	protected DD<VAR, VAL> copy(DD<VAR, VAL> tree) {
+		DD<VAR, VAL> tDD = null;
 
 		if (DDD_TRUE == tree || DDD_FALSE == tree || DDD_ANY == tree) {
 			tDD = tree;
 		} else {
-			DDDImpl dDDImpl = new DDDImpl<>();
+			DDDImpl<VAR, VAL> dDDImpl = new DDDImpl<>();
 			dDDImpl.setVariable(tree.getVariable());
-			for (Val value : tree.getDomain()) {
-				DD<Var, Val> subtree = tree.getAlpha(value);
+			for (VAL value : tree.getDomain()) {
+				DD<VAR, VAL> subtree = tree.getAlpha(value);
 				dDDImpl.addAlpha(value, subtree);
 			}
 			tDD = dDDImpl;
@@ -190,72 +196,78 @@ public final class DDDImpl<Var, Val> extends DDImpl<Var, Val> implements DD<Var,
 		return tDD;
 	}
 
-	public DD<Var, Val> getDDAny() {
-		return (DD<Var, Val>) DDD_ANY;
+	@SuppressWarnings("unchecked")
+	public DD<VAR, VAL> getAny() {
+		return (DD<VAR, VAL>) DDD_ANY;
 	}
 
-	public DD<Var, Val> getDDTrue() {
-		return (DD<Var, Val>) DDD_TRUE;
+	@SuppressWarnings("unchecked")
+	public DD<VAR, VAL> getTrue() {
+		return (DD<VAR, VAL>) DDD_TRUE;
 	}
 
-	public DD<Var, Val> getDDFalse() {
-		return (DD<Var, Val>) DDD_FALSE;
+	@SuppressWarnings("unchecked")
+	public DD<VAR, VAL> getFalse() {
+		return ((DD<VAR, VAL>) DDD_FALSE);
 	}
 
-	public static final DD<?, ?> DDD_ANY = new DDDImpl(Terminator.ANY);
-	public static final DD<?, ?> DDD_FALSE = new DDDImpl(Terminator.FALSE);
-	public static final DD<?, ?> DDD_TRUE = new DDDImpl(Terminator.TRUE, 1.0D);
+	public static final DD<?, ?> DDD_ANY = new DDDImpl<Object, Object>(Terminator.ANY);
+	public static final DD<?, ?> DDD_FALSE = new DDDImpl<Object, Object>(Terminator.FALSE);
+	public static final DD<?, ?> DDD_TRUE = new DDDImpl<Object, Object>(Terminator.TRUE, 1.0D);
 
 	
+	@SuppressWarnings("unchecked")
 	public static <TVar, TVal> DD<TVar, TVal> getTrue(Class<TVar> varClass, Class<TVal> valClass) {
-		return (DD) DDD_TRUE;
+		return (DD<TVar, TVal>) DDD_TRUE;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static <TVar, TVal> DD<TVar, TVal> getFalse(Class<TVar> varClass, Class<TVal> valClass) {
-		return (DD) DDD_FALSE;
+		return (DD<TVar, TVal>) DDD_FALSE;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static <TVar, TVal> DD<TVar, TVal> getAny(Class<TVar> varClass, Class<TVal> valClass) {
-		return (DD) DDD_ANY;
+		return (DD<TVar, TVal>) DDD_ANY;
 	}
 
-	public DD<Var, Val> getTop() {
-		return new DDDImpl((Var) getVariable());
+	public DD<VAR, VAL> getTop() {
+		return new DDDImpl<>(getVariable());
 	}
 
 	public List<?> split() {
 		if (getStates() < 2.0D) {
-			List<DDDImpl<Var, Val>> l = new ArrayList<>();
+			List<DDDImpl<VAR, VAL>> l = new ArrayList<>();
 			l.add(this);
 			return l;
 		}
-		if (getStates() < 50.0D) {
+		if (getStates() < MIN_CACHE_SPLIT_THRESHOLD) {
 			return split(this);
 		}
-		List split = mSplitCache.get(this);
+		List<DD<?, ?>> split = mSplitCache.get(this);
 		if (split == null) {
-			split = split(this);
+			split = (List) split(this);
 			mSplitCache.put(this, split);
 		}
 		return split;
 	}
 
-	private List<DD<Var, Val>> split(DD<Var, Val> ddd2split) {
-		List<DD<Var, Val>> valList = new ArrayList<DD<Var, Val>>();
-		Var variable = (Var) ddd2split.getVariable();
+	private List<DD<VAR, VAL>> split(DD<VAR, VAL> ddd2split) {
+		List<DD<VAR, VAL>> valList = new ArrayList<DD<VAR, VAL>>();
+		VAR variable = (VAR) ddd2split.getVariable();
 
 		if (ddd2split == DDD_TRUE || ddd2split == DDD_FALSE || ddd2split == DDD_ANY) {
 
 			valList.add(ddd2split);
 		} else {
 
-			for (Map.Entry<Val, DD<Var, Val>> entry : (Iterable<Map.Entry<Val, DD<Var, Val>>>) ddd2split.getAlpha()
+			for (Map.Entry<VAL, DD<VAR, VAL>> entry : (Iterable<Map.Entry<VAL, DD<VAR, VAL>>>) ddd2split.getAlpha()
 					.entrySet()) {
-				Val a = entry.getKey();
-				DD<Var, Val> d = entry.getValue();
+				VAL a = entry.getKey();
+				DD<VAR, VAL> d = entry.getValue();
 
-				List<DD<Var, Val>> sons = split((DD<Var, Val>) d);
-				for (DD<Var, Val> son : sons) {
+				List<DD<VAR, VAL>> sons = split((DD<VAR, VAL>) d);
+				for (DD<VAR, VAL> son : sons) {
 					valList.add(create(variable, a, son));
 				}
 			}
@@ -263,15 +275,15 @@ public final class DDDImpl<Var, Val> extends DDImpl<Var, Val> implements DD<Var,
 		return valList;
 	}
 
-	public ValSet<Val> intersection(ValSet<Val> operand) {
+	public ValSet<VAL> intersection(ValSet<VAL> operand) {
 		return intersection((DD) operand, true);
 	}
 
-	public ValSet<Val> union(ValSet<Val> operand) {
+	public ValSet<VAL> union(ValSet<VAL> operand) {
 		return union((DD) operand, true);
 	}
 
-	public ValSet<Val> difference(ValSet<Val> operand) {
+	public ValSet<VAL> difference(ValSet<VAL> operand) {
 		return difference((DD) operand, true);
 	}
 

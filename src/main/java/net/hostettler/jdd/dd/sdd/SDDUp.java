@@ -5,22 +5,22 @@ import java.util.Map;
 import net.hostettler.jdd.dd.DD;
 import net.hostettler.jdd.dd.ValSet;
 
-public class SDDUp<TVar, TVal> extends SDDHomImpl<TVar, TVal> {
-	private TVar mVar;
-	private ValSet<TVal> mVal;
+public class SDDUp<VAR, VAL> extends SDDHomImpl<VAR, VAL> {
+	private VAR mVar;
+	private ValSet<VAL> mVal;
 
-	public SDDUp(TVar var, ValSet<TVal> val) {
+	public SDDUp(VAR var, ValSet<VAL> val) {
 		this.mVar = var;
 		this.mVal = val;
 	}
 
-	protected DD<TVar, ValSet<TVal>> phi(TVar e, ValSet<TVal> x, Map<ValSet<TVal>, DD<TVar, ValSet<TVal>>> alpha,
+	protected DD<VAR, ValSet<VAL>> phi(VAR e, ValSet<VAL> x, Map<ValSet<VAL>, DD<VAR, ValSet<VAL>>> alpha,
 			Object... parameters) {
-		return SDDImpl.create(e, x, SDDImpl.create(this.mVar, (ValSet) this.mVal, (DD<TVar, ValSet<TVal>>) id(alpha, x)));
+		return SDDImpl.create(e, x, SDDImpl.create(this.mVar, (ValSet) this.mVal, (DD<VAR, ValSet<VAL>>) id(alpha, x)));
 	}
 
-	protected DD<?, ?> phi1(Object... parameters) {
-		return SDDImpl.SDD_ANY;
+	protected DD<VAR, ValSet<VAL>> phi1(Object... parameters) {
+		return this.getAny();
 	}
 
 	public int computeHashCode() {

@@ -8,11 +8,11 @@ import net.hostettler.jdd.dd.DD;
 public class DDGraphGenerator {
 	private Set<String> mAlreadyDone;
 
-	public String outputDOTFormat(DD<Object, Object> sdd) {
+	public String outputDOTFormat(DD<? extends Object, ? extends Object> sdd) {
 		this.mAlreadyDone = new HashSet<String>();
 		StringBuilder buffer = new StringBuilder();
 		buffer.append(getPrefix());
-		buffer.append(generate(sdd));
+		buffer.append(generate((DD) sdd));
 		buffer.append(getPostfix());
 		return buffer.toString();
 	}

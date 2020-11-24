@@ -30,8 +30,8 @@ public class DDDHomTest {
 						(DD<String, Integer>) id(param1Map, param1Integer));
 			}
 
-			protected DD<?, ?> phi1(Object... param1VarArgs) {
-				return DDDImpl.DDD_ANY;
+			protected DD<String, Integer> phi1(Object... param1VarArgs) {
+				return this.getAny();
 			}
 
 			public int computeHashCode() {
@@ -51,8 +51,8 @@ public class DDDHomTest {
 						DDDImpl.create(str, integer, id(alpha, val)));
 			}
 
-			protected DD<?, ?> phi1(Object... param1VarArgs) {
-				return DDDImpl.DDD_ANY;
+			protected DD<String, Integer> phi1(Object... param1VarArgs) {
+				return this.getAny();
 			}
 
 			public int computeHashCode() {
@@ -75,8 +75,8 @@ public class DDDHomTest {
 								new Object[] { param1String, param1Integer }));
 			}
 
-			protected DD<?, ?> phi1(Object... param1VarArgs) {
-				return DDDImpl.DDD_ANY;
+			protected DD<String, Integer> phi1(Object... param1VarArgs) {
+				return this.getAny();
 			}
 
 			public int computeHashCode() {
@@ -102,8 +102,8 @@ public class DDDHomTest {
 										phi(id(param1Map, param1Integer), param1VarArgs))));
 			}
 
-			protected DD<?, ?> phi1(Object... param1VarArgs) {
-				return DDDImpl.DDD_ANY;
+			protected DD<String, Integer> phi1(Object... param1VarArgs) {
+				return this.getAny();
 			}
 
 			public int computeHashCode() {
@@ -129,7 +129,7 @@ public class DDDHomTest {
 			}
 
 			protected DD<String, Integer> phi1(Object... param1VarArgs) {
-				return getDDAny();
+				return getAny();
 			}
 
 			public int computeHashCode() {
@@ -239,8 +239,8 @@ public class DDDHomTest {
 						DDDImpl.create("H", Integer.valueOf(1), phi(id(param1Map, param1Integer), new Object[0])));
 			}
 
-			protected DD<?, ?> phi1(Object... param1VarArgs) {
-				return DDDImpl.create("T", Integer.valueOf(1));
+			protected DD<String, Integer> phi1(Object... param1VarArgs) {
+				return DDDImpl.create("T", 1);
 			}
 
 			public int computeHashCode() {
@@ -260,8 +260,8 @@ public class DDDHomTest {
 						(DD<String, Integer>) phi(id(param1Map, param1Integer), new Object[0])));
 			}
 
-			protected DD<?, ?> phi1(Object... param1VarArgs) {
-				return DDDImpl.create("T", Integer.valueOf(2));
+			protected DD<String, Integer> phi1(Object... param1VarArgs) {
+				return DDDImpl.create("T", 2);
 			}
 
 			public int computeHashCode() {

@@ -5,12 +5,12 @@ import java.util.Map;
 import net.hostettler.jdd.dd.util.ArrayWrapper;
 import net.hostettler.jdd.dd.util.OperationCacheWeak;
 
-public abstract class HomImpl<Var, Val> implements Hom<Var, Val> {
+public abstract class HomImpl<VAR, VAL> implements Hom<VAR, VAL> {
 	private static long overallHits = 0L;
 
 	private int mHashCode = -1;
 
-	private static OperationCacheWeak<ArrayWrapper, DD<?,?>> mCache = new OperationCacheWeak<>();
+	private static OperationCacheWeak<ArrayWrapper, DD<?, ?>> mCache = new OperationCacheWeak<>();
 
 	private boolean mActivateCache;
 
@@ -22,16 +22,16 @@ public abstract class HomImpl<Var, Val> implements Hom<Var, Val> {
 		this.mActivateCache = activateCache;
 	}
 
-	protected abstract DD<?, ?> phi1(Object... paramVarArgs);
+	protected abstract DD<VAR, VAL> phi1(Object... paramVarArgs);
 
-	protected abstract DD<Var, Val> phiX(Var paramVar, Val paramVal, Map<Val, DD<Var, Val>> paramMap,
+	protected abstract DD<VAR, VAL> phiX(VAR paramVar, VAL paramVal, Map<VAL, DD<VAR, VAL>> paramMap,
 			Object... paramVarArgs);
 
-	public final DD<Var, Val> phi(DD<Var, Val> operand, Object... parameters) {
-		DD<Var, Val> sum = null;
+	public final DD<VAR, VAL> phi(DD<VAR, VAL> operand, Object... parameters) {
+		DD<VAR, VAL> sum = null;
 		overallHits++;
 
-		if (getDDAny() == operand || getDDFalse() == operand) {
+		if (getAny() == operand || getFalse() == operand) {
 			sum = operand;
 		} else {
 			ArrayWrapper params = null;
@@ -42,34 +42,34 @@ public abstract class HomImpl<Var, Val> implements Hom<Var, Val> {
 				} else {
 					params = new ArrayWrapper(new Object[] { this, operand });
 				}
-				sum = (DD<Var, Val>) mCache.get(params);
+				sum = (DD<VAR, VAL>) mCache.get(params);
 			}
 
 			if (sum == null) {
-				sum = getDDFalse();
+				sum = getFalse();
 
-				if (getDDTrue() == operand) {
-					sum = (DD) phi1(parameters);
+				if (getTrue() == operand) {
+					sum = phi1(parameters);
 				} else {
-					Var variable = (Var) operand.getVariable();
-					Map<Val, DD<Var, Val>> alpha = operand.getAlpha();
+					VAR variable = (VAR) operand.getVariable();
+					Map<VAL, DD<VAR, VAL>> alpha = operand.getAlpha();
 
-					if (isLocallyInvariant((DD<Var, Val>) operand)) {
-						for (Val x : operand.getDomain()) {
-							DD<Var, Val> phiResult = phi((DD) id(alpha, x), parameters);
+					if (isLocallyInvariant((DD<VAR, VAL>) operand)) {
+						for (VAL x : operand.getDomain()) {
+							DD<VAR, VAL> phiResult = phi(id(alpha, x), parameters);
 
-							if (phiResult != getDDFalse()) {
-								DD<Var, Val> newDD = (DD<Var, Val>) operand.getTop();
+							if (phiResult != getFalse()) {
+								DD<VAR, VAL> newDD = (DD<VAR, VAL>) operand.getTop();
 								newDD.setIgnoreThisDD(operand.ignoreDD());
 								newDD.addAlpha(x, phiResult);
-								DD<Var, Val> dd = newDD;
+								DD<VAR, VAL> dd = newDD;
 								dd = DDImpl.canonicity(dd);
 								sum = sum.union(dd);
 							}
 						}
 					} else {
-						for (Val x : operand.getDomain()) {
-							DD<Var, Val> phiResult = phiX(variable, x, alpha, parameters);
+						for (VAL x : operand.getDomain()) {
+							DD<VAR, VAL> phiResult = phiX(variable, x, alpha, parameters);
 							sum = sum.union(phiResult);
 						}
 					}
@@ -83,21 +83,21 @@ public abstract class HomImpl<Var, Val> implements Hom<Var, Val> {
 		return sum;
 	}
 
-	protected final  DD<Var, Val> id(Map<Val, DD<Var, Val>> alpha, Val x) {
+	protected final DD<VAR, VAL> id(Map<VAL, DD<VAR, VAL>> alpha, VAL x) {
 		return alpha.get(x);
 	}
 
-	public abstract Hom<Var, Val> compose(Hom<Var, Val> paramTHom);
+	public abstract Hom<VAR, VAL> compose(Hom<VAR, VAL> paramTHom);
 
-	public abstract Hom<Var, Val> compose(Hom<Var, Val> paramTHom, boolean paramBoolean);
+	public abstract Hom<VAR, VAL> compose(Hom<VAR, VAL> paramTHom, boolean paramBoolean);
 
-	public abstract Hom<Var, Val> union(Hom<Var, Val> paramTHom);
+	public abstract Hom<VAR, VAL> union(Hom<VAR, VAL> paramTHom);
 
-	public abstract Hom<Var, Val> union(Hom<Var, Val> paramTHom, boolean paramBoolean);
+	public abstract Hom<VAR, VAL> union(Hom<VAR, VAL> paramTHom, boolean paramBoolean);
 
-	public abstract Hom<Var, Val> fixpoint();
+	public abstract Hom<VAR, VAL> fixpoint();
 
-	public abstract Hom<Var, Val> fixpoint(boolean paramBoolean);
+	public abstract Hom<VAR, VAL> fixpoint(boolean paramBoolean);
 
 	public static long getCacheHits() {
 		return mCache.getCacheHits();
@@ -111,13 +111,15 @@ public abstract class HomImpl<Var, Val> implements Hom<Var, Val> {
 		return mCache.getOpInCache();
 	}
 
-	public boolean isLocallyInvariant(DD<Var, Val> dd) {
+	public boolean isLocallyInvariant(DD<VAR, VAL> dd) {
 		return false;
 	}
 
-	protected abstract DD<Var, Val> getDDAny();
-	protected abstract DD<Var, Val> getDDTrue();
-	protected abstract DD<Var, Val> getDDFalse();
+	protected abstract DD<VAR, VAL> getAny();
+
+	protected abstract DD<VAR, VAL> getTrue();
+
+	protected abstract DD<VAR, VAL> getFalse();
 
 	public static long getOverallHits() {
 		return overallHits;
@@ -143,8 +145,9 @@ public abstract class HomImpl<Var, Val> implements Hom<Var, Val> {
 
 	public final boolean equals(Object that) {
 		totalEqual++;
-		if (!isEqual(that) && hashCode() == that.hashCode()) {
+		if (that != null && !isEqual(that) && hashCode() == that.hashCode()) {
 			collision++;
+			isEqual(that);
 			if (collision < 100L) {
 				System.out.println("Collision : " + getClass());
 			}

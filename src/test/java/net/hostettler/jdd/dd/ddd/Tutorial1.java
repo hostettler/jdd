@@ -30,7 +30,7 @@ public class Tutorial1 {
 				Integer integer = (Integer) parameters[1];
 				
 				if (var.equals(str) && val.equals(integer)) {
-					return (DD) DDDImpl.DDD_FALSE;	
+					return getFalse();	
 				} else {
 					return DDDImpl.create(var, val, phi(id(alpha, val), parameters));	
 				}

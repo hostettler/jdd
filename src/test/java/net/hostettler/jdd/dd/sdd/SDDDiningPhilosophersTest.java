@@ -18,9 +18,6 @@ import net.hostettler.jdd.dd.ValSet;
 import net.hostettler.jdd.dd.ddd.DDDHomImpl;
 import net.hostettler.jdd.dd.ddd.DDDIdHom;
 import net.hostettler.jdd.dd.ddd.DDDImpl;
-import net.hostettler.jdd.dd.sdd.SDDIdHom;
-import net.hostettler.jdd.dd.sdd.SDDImpl;
-import net.hostettler.jdd.dd.sdd.SDDLocalHom;
 
 public class SDDDiningPhilosophersTest {
 	public static final int NB_PHILO = 100;
@@ -50,23 +47,23 @@ public class SDDDiningPhilosophersTest {
 		HMinus hMinus1 = new HMinus(STATES.Idle, 1);
 		HPlus hPlus2 = new HPlus(STATES.WaitL, Integer.valueOf(1));
 		HPlus hPlus3 = new HPlus(STATES.WaitR, Integer.valueOf(1));
-		Hom<STATES, Integer> dDDHom1 = (Hom) hMinus1.compose(hPlus2.compose((Hom) hPlus3));
+		Hom<STATES, Integer> dDDHom1 = hMinus1.compose(hPlus2.compose(hPlus3));
 		hMinus1 = new HMinus(STATES.WaitL, 1);
 		HMinus hMinus2 = new HMinus(STATES.Fork, 1);
 		hPlus3 = new HPlus(STATES.HasL, Integer.valueOf(1));
-		Hom<STATES, Integer> dDDHom2 = (Hom) hMinus2.compose(hMinus1.compose((Hom) hPlus3));
+		Hom<STATES, Integer> dDDHom2 = hMinus2.compose(hMinus1.compose( hPlus3));
 		hMinus1 = new HMinus(STATES.HasL, 1);
 		hMinus2 = new HMinus(STATES.HasR, 1);
 		hPlus3 = new HPlus(STATES.Idle, Integer.valueOf(1));
 		HPlus hPlus4 = new HPlus(STATES.Fork, Integer.valueOf(1));
-		Hom<?, ?> dDDHom4 = (Hom) hMinus1.compose(hMinus2.compose(hPlus3.compose((Hom) hPlus4)));
+		Hom<?, ?> dDDHom4 = hMinus1.compose(hMinus2.compose(hPlus3.compose(hPlus4)));
 		hMinus1 = new HMinus(STATES.WaitR, 1);
 		HPlus hPlus1 = new HPlus(STATES.HasR, Integer.valueOf(1));
-		Hom<?, ?> dDDHom3 = (Hom) hMinus1.compose((Hom) hPlus1);
+		Hom<?, ?> dDDHom3 =  hMinus1.compose(hPlus1);
 		Hom<STATES, Integer> dDDHom5 = saturateLocal(
-				(Hom<STATES, Integer>) saturateLocal(dDDHom2).compose((Hom) saturateLocal(dDDHom1)));
+				(Hom<STATES, Integer>) saturateLocal(dDDHom2).compose(saturateLocal(dDDHom1)));
 		for (byte b = 0; b < NB_PHILO; b++) {
-			Hom<Integer, ValSet<Integer>> sDDHom1 =  new SDDLocalHom(
+			Hom<Integer, ValSet<Integer>> sDDHom1 = new SDDLocalHom(
 							new HMinus(STATES.Fork, 1),Integer.valueOf((b + 1) % NB_PHILO)).compose(new SDDLocalHom(
 									dDDHom3, Integer.valueOf(b)));
 							
@@ -74,7 +71,7 @@ public class SDDDiningPhilosophersTest {
 			Hom<Integer, ValSet<Integer>> sDDHom2 =  (new SDDLocalHom(dDDHom4,
 					Integer.valueOf(b)))
 							.compose(new SDDLocalHom(
-									new HPlus(STATES.Fork, Integer.valueOf(1)),
+									new HPlus(STATES.Fork, 1),
 									Integer.valueOf((b + 1) % NB_PHILO)));
 			sDDHom2 = saturateGlobal(sDDHom2);
 			Hom<Integer, ValSet<Integer>> sDDHom3 = 	((new SDDLocalHom(
@@ -86,10 +83,10 @@ public class SDDDiningPhilosophersTest {
 	}
 
 	DD<Integer, ValSet<Integer>> markingsChainingLoop(DD<Integer, ValSet<Integer>> paramSDD) {
-		Hom sDDHom = this.mEvents.get(0);
+		Hom<Integer, ValSet<Integer>> sDDHom = this.mEvents.get(0);
 		for (byte b = 1; b < this.mEvents.size(); b++)
 			sDDHom =  sDDHom.compose(this.mEvents.get(b));
-		return  sDDHom.union(new SDDIdHom<Object, Object>()).fixpoint().phi(paramSDD,
+		return  sDDHom.union(new SDDIdHom<Integer, Integer>()).fixpoint().phi(paramSDD,
 				new Object[0]);
 	}
 
@@ -104,9 +101,9 @@ public class SDDDiningPhilosophersTest {
 	public void testDiningPhilo() throws IOException {
 		try {
 			DD<STATES, Integer> dDD = buildInitState();
-			DD<Integer, ValSet<Integer>> sDD = (DD) SDDImpl.SDD_TRUE;
+			DD<Integer, ValSet<Integer>> sDD =  SDDImpl.getTrue(Integer.class, Integer.class);
 			for (byte b = 0; b < NB_PHILO; b++)
-				sDD = SDDImpl.create(Integer.valueOf(b), (ValSet) dDD, sDD);
+				sDD = SDDImpl.create(Integer.valueOf(b), dDD, sDD);
 			long l1 = System.currentTimeMillis();
 			DD<Integer, ValSet<Integer>> sDD1 = markingsChainingLoop(sDD);
 			System.out.println("Time : " + (System.currentTimeMillis() - l1));
@@ -161,8 +158,8 @@ public class SDDDiningPhilosophersTest {
 			return (param1DD.getVariable() != this.mPlace);
 		}
 
-		protected DD<?, ?> phi1(Object... param1VarArgs) {
-			return getDDFalse();
+		protected DD<STATES, Integer> phi1(Object... param1VarArgs) {
+			return getFalse();
 		}
 
 		public int computeHashCode() {
@@ -201,15 +198,15 @@ public class SDDDiningPhilosophersTest {
 			return (param1Integer.intValue() >= this.mValue)
 					? DDDImpl.create(param1STATES, Integer.valueOf(param1Integer.intValue() - this.mValue),
 							 id(param1Map, param1Integer))
-					: getDDFalse();
+					: getFalse();
 		}
 
 		public boolean isLocallyInvariant(DD<SDDDiningPhilosophersTest.STATES, Integer> param1DD) {
 			return (param1DD.getVariable() != this.mPlace);
 		}
 
-		protected DD<?, ?> phi1(Object... param1VarArgs) {
-			return getDDFalse();
+		protected DD<STATES, Integer> phi1(Object... param1VarArgs) {
+			return getFalse();
 		}
 
 		public int computeHashCode() {

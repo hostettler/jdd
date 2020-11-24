@@ -6,7 +6,7 @@ import net.hostettler.jdd.dd.DD;
 import net.hostettler.jdd.dd.Hom;
 import net.hostettler.jdd.dd.HomImpl;
 
-public  abstract class DDDHomImpl<Var, Val> extends HomImpl<Var, Val> implements Hom<Var, Val> {
+public  abstract class DDDHomImpl<VAR, VAL> extends HomImpl<VAR, VAL> implements Hom<VAR, VAL> {
 	public DDDHomImpl(boolean activateCache) {
 		super(activateCache);
 	}
@@ -15,88 +15,91 @@ public  abstract class DDDHomImpl<Var, Val> extends HomImpl<Var, Val> implements
 		super(true);
 	}
 
-	protected DD getDDAny() {
-		return DDDImpl.DDD_ANY;
+	@SuppressWarnings("unchecked")
+	protected DD<VAR, VAL> getAny() {
+		return (DD<VAR, VAL>) DDDImpl.DDD_ANY;
 	}
 
-	protected DD getDDFalse() {
-		return DDDImpl.DDD_FALSE;
+	@SuppressWarnings("unchecked")
+	protected DD<VAR, VAL> getFalse() {
+		return (DD<VAR, VAL>) DDDImpl.DDD_FALSE;
 	}
 
-	protected DD getDDTrue() {
-		return DDDImpl.DDD_TRUE;
+	@SuppressWarnings("unchecked")
+	protected DD<VAR, VAL> getTrue() {
+		return (DD<VAR, VAL>) DDDImpl.DDD_TRUE;
 	}
 
-	protected DD<?, ?> phi1(Object... parameters) {
-		return DDDImpl.DDD_TRUE;
+	protected DD<VAR, VAL> phi1(Object... parameters) {
+		return this.getTrue();
 	}
 	
 	@Override
-	protected DD<Var, Val> phiX(Var e, Val x, Map<Val, DD<Var, Val>> alpha, Object... parameters) {
+	protected DD<VAR, VAL> phiX(VAR e, VAL x, Map<VAL, DD<VAR, VAL>> alpha, Object... parameters) {
 		return phi(e, x, (Map) alpha, parameters);
 	}
 
-	public Hom<Var, Val> compose(Hom<Var, Val> subHom) {
+	public Hom<VAR, VAL> compose(Hom<VAR, VAL> subHom) {
 		return compose(subHom, true);
 	}
 
-	public Hom<Var, Val> compose(Hom<Var, Val> subHom, boolean cache) {
-		return new ComposeHom((Hom<Var, Val>) subHom, cache);
+	public Hom<VAR, VAL> compose(Hom<VAR, VAL> subHom, boolean cache) {
+		return new ComposeHom((Hom<VAR, VAL>) subHom, cache);
 	}
 
-	public Hom<Var, Val> union(Hom<Var, Val> subHom) {
+	public Hom<VAR, VAL> union(Hom<VAR, VAL> subHom) {
 		return union(subHom, true);
 	}
 
-	public Hom<Var, Val> union(Hom<Var, Val> subHom, boolean cache) {
-		return  new UnionHom((Hom<Var, Val>) subHom, cache);
+	public Hom<VAR, VAL> union(Hom<VAR, VAL> subHom, boolean cache) {
+		return  new UnionHom((Hom<VAR, VAL>) subHom, cache);
 	}
 
-	public Hom<Var, Val> fixpoint() {
+	public Hom<VAR, VAL> fixpoint() {
 		return fixpoint(true);
 	}
 
-	public Hom<Var, Val> fixpoint(boolean cache) {
+	public Hom<VAR, VAL> fixpoint(boolean cache) {
 		return  new FixPointHom(cache);
 	}
 
-	public Hom<Var, Val>  saturate() {
-		Hom<Var, Val> t = union( new DDDIdHom<Var, Val>());
+	public Hom<VAR, VAL>  saturate() {
+		Hom<VAR, VAL> t = union( new DDDIdHom<VAR, VAL>());
 		return t.fixpoint(true);
 	}
 
-	public Hom<Var, Val>  saturate(boolean cache) {
-		Hom<Var, Val> t = union((Hom) new DDDIdHom<Object, Object>());
+	public Hom<VAR, VAL>  saturate(boolean cache) {
+		Hom<VAR, VAL> t = union(new DDDIdHom<VAR, VAL>());
 		return  t.fixpoint(cache);
 	}
 
-	protected abstract DD<Var, Val> phi(Var paramVar, Val paramVal, Map<Val, DD<Var, Val>> paramMap,
+	protected abstract DD<VAR, VAL> phi(VAR paramVar, VAL paramVal, Map<VAL, DD<VAR, VAL>> paramMap,
 			Object... paramVarArgs);
 
-	private class ComposeHom extends DDDHomImpl<Var, Val> {
-		private HomImpl<Var, Val> mHomOp1;
-		private HomImpl<Var, Val> mHomOp2;
+	private class ComposeHom extends DDDHomImpl<VAR, VAL> {
+		private DDDHomImpl<VAR, VAL> mHomOp1;
+		private DDDHomImpl<VAR, VAL> mHomOp2;
 
-		public ComposeHom(Hom<Var, Val> subHom, boolean cache) {
+		public ComposeHom(Hom<VAR, VAL> subHom, boolean cache) {
 			super(cache);
-			this.mHomOp1 = (HomImpl<Var, Val>) subHom;
-			this.mHomOp2 = (HomImpl<Var, Val>) DDDHomImpl.this;
+			this.mHomOp1 = (DDDHomImpl<VAR, VAL>) subHom;
+			this.mHomOp2 = (DDDHomImpl<VAR, VAL>) DDDHomImpl.this;
 		}
 
-		protected DD<Var, Val> phi(Var e, Val x, Map<Val, DD<Var, Val>> alpha, Object... parameters) {
-			DD<Var, Val> ddd = DDDImpl.create(e, x, (DD<Var, Val>) id(alpha, x));
+		protected DD<VAR, VAL> phi(VAR e, VAL x, Map<VAL, DD<VAR, VAL>> alpha, Object... parameters) {
+			DD<VAR, VAL> ddd = DDDImpl.create(e, x, (DD<VAR, VAL>) id(alpha, x));
 			ddd = this.mHomOp2.phi(ddd, parameters);
 			ddd = this.mHomOp1.phi(ddd, parameters);
 			return ddd;
 		}
 
-		protected DD<?, ?> phi1(Object... parameters) {
-			DD<Var, Val> ddd = (DD<Var, Val>) ((DDDHomImpl)this.mHomOp2).phi1(parameters);
+		protected DD<VAR, VAL>  phi1(Object... parameters) {
+			DD<VAR, VAL>  ddd = (DD<VAR, VAL>) this.mHomOp2.phi1(parameters);
 			ddd = this.mHomOp1.phi(ddd, parameters);
 			return ddd;
 		}
 
-		public boolean isLocallyInvariant(DD<Var, Val> dd) {
+		public boolean isLocallyInvariant(DD<VAR, VAL> dd) {
 			return this.mHomOp1.isLocallyInvariant(dd) & this.mHomOp2.isLocallyInvariant(dd);
 		}
 
@@ -104,6 +107,7 @@ public  abstract class DDDHomImpl<Var, Val> extends HomImpl<Var, Val> implements
 			return getClass().hashCode() * 2161 + this.mHomOp1.hashCode() * 7481 + this.mHomOp2.hashCode() * 4973;
 		}
 
+		@SuppressWarnings("unchecked")
 		protected boolean isEqual(Object that) {
 			boolean eq = (this == that);
 			if (!eq && that instanceof DDDHomImpl.ComposeHom) {
@@ -119,17 +123,17 @@ public  abstract class DDDHomImpl<Var, Val> extends HomImpl<Var, Val> implements
 		}
 	}
 
-	private class UnionHom extends DDDHomImpl<Var, Val> {
-		private HomImpl<Var, Val> mHomOp1;
+	private class UnionHom extends DDDHomImpl<VAR, VAL> {
+		private HomImpl<VAR, VAL> mHomOp1;
 
-		private HomImpl<Var, Val> mHomOp2;
+		private HomImpl<VAR, VAL> mHomOp2;
 
 		private boolean mHom1isId;
 
 		private boolean mHom2isId;
 
-		public UnionHom(Hom<Var, Val> subHom, boolean cache) {
-			this.mHomOp1 = (HomImpl<Var, Val>) subHom;
+		public UnionHom(Hom<VAR, VAL> subHom, boolean cache) {
+			this.mHomOp1 = (HomImpl<VAR, VAL>) subHom;
 			this.mHomOp2 =  DDDHomImpl.this;
 			if (this.mHomOp1 instanceof DDDIdHom) {
 				this.mHom1isId = true;
@@ -138,8 +142,8 @@ public  abstract class DDDHomImpl<Var, Val> extends HomImpl<Var, Val> implements
 			}
 		}
 
-		protected DD<Var, Val> phi(Var e, Val x, Map<Val, DD<Var, Val>> alpha, Object... parameters) {
-			DD<Var, Val> d1, d2, ddd = DDDImpl.create(e, x, (DD<Var, Val>) id(alpha, x));
+		protected DD<VAR, VAL> phi(VAR e, VAL x, Map<VAL, DD<VAR, VAL>> alpha, Object... parameters) {
+			DD<VAR, VAL> d1, d2, ddd = DDDImpl.create(e, x, (DD<VAR, VAL>) id(alpha, x));
 			if (this.mHom1isId) {
 				d1 = ddd;
 			} else {
@@ -150,18 +154,18 @@ public  abstract class DDDHomImpl<Var, Val> extends HomImpl<Var, Val> implements
 			} else {
 				d2 = this.mHomOp2.phi(ddd, parameters);
 			}
-			ddd = (DD<Var, Val>) d1.union(d2);
+			ddd = (DD<VAR, VAL>) d1.union(d2);
 
 			return ddd;
 		}
 
-		protected DD<?, ?> phi1(Object... parameters) {
-			DD<Var, Val> d1 = ((DDDHomImpl)this.mHomOp1).phi1(parameters);
-			DD<Var, Val> d2 = ((DDDHomImpl)this.mHomOp2).phi1(parameters);
-			return (DD<?, ?>) d1.union(d2);
+		protected DD<VAR, VAL>  phi1(Object... parameters) {
+			DD<VAR, VAL> d1 = ((DDDHomImpl)this.mHomOp1).phi1(parameters);
+			DD<VAR, VAL> d2 = ((DDDHomImpl)this.mHomOp2).phi1(parameters);
+			return d1.union(d2);
 		}
 
-		public boolean isLocallyInvariant(DD<Var, Val> dd) {
+		public boolean isLocallyInvariant(DD<VAR, VAL> dd) {
 			return this.mHomOp1.isLocallyInvariant(dd) & this.mHomOp2.isLocallyInvariant(dd);
 		}
 
@@ -169,6 +173,7 @@ public  abstract class DDDHomImpl<Var, Val> extends HomImpl<Var, Val> implements
 			return getClass().hashCode() * 5003 + this.mHomOp1.hashCode() * 3581 + this.mHomOp2.hashCode() * 2741;
 		}
 
+		@SuppressWarnings("unchecked")
 		protected boolean isEqual(Object that) {
 			boolean eq = (this == that);
 			if (!eq && that instanceof DDDHomImpl.UnionHom) {
@@ -184,18 +189,18 @@ public  abstract class DDDHomImpl<Var, Val> extends HomImpl<Var, Val> implements
 		}
 	}
 
-	private class FixPointHom extends DDDHomImpl<Var, Val> {
-		private Hom<Var, Val> mHom;
+	private class FixPointHom extends DDDHomImpl<VAR, VAL> {
+		private Hom<VAR, VAL> mHom;
 
 		public FixPointHom(boolean cache) {
 			super(cache);
 			this.mHom = DDDHomImpl.this;
 		}
 
-		protected DD<Var, Val> phi(Var e, Val x, Map<Val, DD<Var, Val>> alpha, Object... parameters) {
-			DD<Var, Val> oldDDD = null;
+		protected DD<VAR, VAL> phi(VAR e, VAL x, Map<VAL, DD<VAR, VAL>> alpha, Object... parameters) {
+			DD<VAR, VAL> oldDDD = null;
 
-			DD<Var, Val> newDDD = DDDImpl.create(e, x, (DD<Var, Val>) id(alpha, x));
+			DD<VAR, VAL> newDDD = DDDImpl.create(e, x, (DD<VAR, VAL>) id(alpha, x));
 			do {
 				oldDDD = newDDD;
 				newDDD = this.mHom.phi(newDDD, parameters);
@@ -204,18 +209,19 @@ public  abstract class DDDHomImpl<Var, Val> extends HomImpl<Var, Val> implements
 			return newDDD;
 		}
 
-		public boolean isLocallyInvariant(DD<Var, Val> dd) {
+		public boolean isLocallyInvariant(DD<VAR, VAL> dd) {
 			return DDDHomImpl.this.isLocallyInvariant(dd);
 		}
 
-		protected DD<?, ?> phi1(Object... parameters) {
-			return this.mHom.phi((DD) DDDImpl.DDD_TRUE, parameters);
+		protected DD<VAR, VAL>  phi1(Object... parameters) {
+			return this.mHom.phi(this.getTrue(), parameters);
 		}
 
 		protected int computeHashCode() {
 			return getClass().hashCode() * 3881 + this.mHom.hashCode() * 1733;
 		}
 
+		@SuppressWarnings("unchecked")
 		protected boolean isEqual(Object that) {
 			boolean eq = (this == that);
 			if (!eq && that instanceof DDDHomImpl.FixPointHom) {

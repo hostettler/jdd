@@ -4,7 +4,7 @@ import java.util.Map;
 
 import net.hostettler.jdd.dd.DD;
 
-public interface Evaluator<Var, Val> {
-	DD<Var, Val> evaluate(Map<Var, Val> paramMap);
+public interface Evaluator<VAR, VAL> {
+	DD<VAR, VAL> evaluate(Map<VAR, VAL> paramMap);
 }
 
