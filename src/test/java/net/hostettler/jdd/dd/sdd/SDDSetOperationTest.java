@@ -74,13 +74,18 @@ public class SDDSetOperationTest {
 	public void testSDDUnion1() {
 		System.out.println("*** Union 1 ***");
 		System.out.println("sdd1 + sdd2");
-		ObjSet<Integer> objSet = ObjSet.create(new Integer[] { 1, 3 });
+		ObjSet<Integer> objSet = ObjSet.create(1,3);
 		DD<String, ValSet<Integer>> sDD = this.sdd1.union(this.sdd2);
+		System.out.println(sdd1);
+		System.out.println(sdd2);
+		
 		DD<String, ValSet<Integer>> sDD1 = SDDImpl.create("B", objSet, SDDImpl.create("B", this.set2))
-				.union(SDDImpl.create("B", this.set2, SDDImpl.getTrue(String.class, Integer.class)));
+				.union(SDDImpl.create("B", this.set2, SDDImpl.getAny(String.class, Integer.class)));
+		
 		DD<String, ValSet<Integer>> sDD2 = SDDImpl.create("A", (ValSet) sDD1, SDDImpl.create("B", this.set2));
-		System.out.println("res : " + sDD);
-		System.out.println("exp : " + sDD2);
+		
+		System.out.println("result : " + sDD);
+		System.out.println("expected : " + sDD2);
 		Assert.assertSame(sDD2, sDD);
 	}
 
