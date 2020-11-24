@@ -14,8 +14,10 @@ then
         rm -rf ~/.gnupg
     fi
 
-	echo "Deploy Step 3 - Generate GPG key"
-    source .travis/gpg.sh
+	echo "Deploy Step 3 - Import GPG key"
+    #source .travis/gpg.sh
+    echo $GPG_SECRET_KEYS | base64 --decode | $GPG_EXECUTABLE --import
+    echo $GPG_OWNERTRUST | base64 --decode | $GPG_EXECUTABLE --import-ownertrust
 
 	echo "Deploy Step 4 - Do the deploy"
     mvn clean deploy --settings .travis/settings.xml -DskipTests=true --batch-mode --update-snapshots -Prelease
