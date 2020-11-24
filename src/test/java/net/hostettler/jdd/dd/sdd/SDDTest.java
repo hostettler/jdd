@@ -24,7 +24,7 @@ public class SDDTest {
 	@Test
 	public void testCanonicity() {
 		System.out.println("****** Canonicity ******");
-		DD<String, ValSet<Integer>> sDD1 = SDDImpl.create("a",  ObjSet.create(Integer.valueOf(1)));
+		DD<String, ValSet<Integer>> sDD1 = SDDImpl.create("a", ObjSet.create(Integer.valueOf(1)));
 		DD<String, ValSet<Integer>> sDD2 = SDDImpl.create("b", ObjSet.create(Integer.valueOf(1)));
 		Assert.assertSame(this.sdd1, sDD1);
 		Assert.assertSame(this.sdd2, sDD2);
@@ -49,7 +49,7 @@ public class SDDTest {
 	public void testConcatSDDs() {
 		System.out.println("****** Concat ******");
 		System.out.println("Concat :" + this.sdd1.append(this.sdd2));
-		Assert.assertEquals("a--{1}-->b--{1}-->ONE", ( this.sdd1.append(this.sdd2)).toString());
+		Assert.assertEquals("a--{1}-->b--{1}-->ONE", (this.sdd1.append(this.sdd2)).toString());
 	}
 
 	@Test
@@ -76,9 +76,9 @@ public class SDDTest {
 	@Test
 	public void testIgnoreDD1() {
 		System.out.println("****** IgnoreDD ******");
-		DD<String, ValSet<Integer>>  sDD1 = SDDImpl.create("a", ObjSet.create(99));
+		DD<String, ValSet<Integer>> sDD1 = SDDImpl.create("a", ObjSet.create(99));
 		sDD1.setIgnoreThisDD(true);
-		DD<String, ValSet<Integer>>  sDD2 = SDDImpl.create("a", ObjSet.create(99), sDD1);
+		DD<String, ValSet<Integer>> sDD2 = SDDImpl.create("a", ObjSet.create(99), sDD1);
 		sDD2.setIgnoreThisDD(true);
 		Assert.assertEquals(Boolean.valueOf(true), Boolean.valueOf(sDD2.ignoreDD()));
 	}
@@ -86,23 +86,36 @@ public class SDDTest {
 	@Test
 	public void testIgnoreDD2() {
 		System.out.println("****** IgnoreDD ******");
-		DD<String, ValSet<Integer>>  sDD1 = SDDImpl.create("a", ObjSet.create(Integer.valueOf(54)));
+		DD<String, ValSet<Integer>> sDD1 = SDDImpl.create("a", ObjSet.create(Integer.valueOf(54)));
 		sDD1.setIgnoreThisDD(true);
-		DD<String, ValSet<Integer>>   sDD2 = SDDImpl.create("a", ObjSet.create(Integer.valueOf(47)));
+		DD<String, ValSet<Integer>> sDD2 = SDDImpl.create("a", ObjSet.create(Integer.valueOf(47)));
 		sDD2 = sDD2.append(sDD1);
 		sDD2.setIgnoreThisDD(true);
 		Assert.assertEquals(Boolean.valueOf(true), Boolean.valueOf(sDD2.ignoreDD()));
 	}
-	
+
 	@Test
 	public void testNull() {
-		DD<String, ValSet<Integer>> sDD1 = SDDImpl.create("a",  ObjSet.create((Integer) null));
+		DD<String, ValSet<Integer>> sDD1 = SDDImpl.create("a", ObjSet.create((Integer) null));
 		System.out.println(sDD1);
-		DD<String, ValSet<Integer>> sDD2 = SDDImpl.create("a",  ObjSet.create(1));
+		DD<String, ValSet<Integer>> sDD2 = SDDImpl.create("a", ObjSet.create(1));
 		Assert.assertSame(sDD2, sDD1.union(sDD2));
 		Assert.assertSame(SDDImpl.SDD_FALSE, sDD1.difference(sDD2));
 		Assert.assertSame(SDDImpl.SDD_FALSE, sDD1.intersection(sDD2));
 		Assert.assertSame(sDD2, sDD2.difference(sDD1));
 		Assert.assertSame(SDDImpl.SDD_FALSE, sDD2.intersection(sDD1));
+	}
+
+	@Test
+	public void testAppend() {
+		DD<String, ValSet<Integer>> sDD1 = SDDImpl.getTrue(String.class, Integer.class);
+
+		sDD1 = sDD1.append(SDDImpl.create("a", ObjSet.create(1)));
+		sDD1 = sDD1.append(SDDImpl.create("b", ObjSet.create(2)));
+		sDD1 = sDD1.append(SDDImpl.create("c", ObjSet.create(3)));
+
+		Assert.assertSame(SDDImpl.create("a", ObjSet.create(1), SDDImpl.create("b", ObjSet.create(2), SDDImpl.create("c", ObjSet.create(3)))),
+				sDD1);
+		System.out.println(sDD1);
 	}
 }
