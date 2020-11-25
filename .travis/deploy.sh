@@ -16,8 +16,8 @@ then
 
 	echo "Deploy Step 3 - Import GPG key"
     #source .travis/gpg.sh
-    echo $GPG_SECRET_KEYS | base64 --decode | $GPG_EXECUTABLE --import
-    echo $GPG_OWNERTRUST | base64 --decode | $GPG_EXECUTABLE --import-ownertrust
+    echo $GPG_SECRET_KEYS | base64 --decode | gpg --import
+    echo $GPG_OWNERTRUST | base64 --decode | gpg --import-ownertrust
 
 	echo "Deploy Step 4 - Do the deploy"
     mvn clean deploy --settings .travis/settings.xml -DskipTests=true --batch-mode --update-snapshots -Prelease
