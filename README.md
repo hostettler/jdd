@@ -18,7 +18,7 @@ For Maven users
 <dependency>
   <groupId>net.hostettler.jdd</groupId>
   <artifactId>jdd</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0.2</version>
 </dependency>
 ```
 
@@ -26,7 +26,7 @@ for Gradle users
 
 ```ruby
 dependencies {
-    implementation 'net.hostettler.jdd:jdd:1.0-SNAPSHOT'
+    implementation 'net.hostettler.jdd:jdd:1.0.2'
 }
 ```
 
